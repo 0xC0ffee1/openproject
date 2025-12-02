@@ -318,12 +318,13 @@ export default class HoverCardTriggerController extends ApplicationController {
   }
 
   private popoverFromTemplate(overlay:HTMLElement, template:HTMLTemplateElement):HTMLElement {
-    const popoverFragment = template.content.cloneNode(true) as DocumentFragment;
-
-    overlay.appendChild(popoverFragment);
-
-    const popover = overlay.children[0] as HTMLElement;
+    const popover = document.createElement('div');
     this.setPopoverAttributes(popover);
+
+    const popoverFragment = template.content.cloneNode(true) as DocumentFragment;
+    popover.appendChild(popoverFragment);
+
+    overlay.appendChild(popover);
 
     return popover;
   }
