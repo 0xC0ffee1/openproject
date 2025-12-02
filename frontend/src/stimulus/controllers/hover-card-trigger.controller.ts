@@ -146,8 +146,8 @@ export default class HoverCardTriggerController extends ApplicationController {
     this.close(true);
 
     const turboFrameUrl = this.parseHoverCardUrl(el);
-    const popoverEl = this.getPopoverFromId(el);
-    if (!turboFrameUrl && !popoverEl) { return; }
+    const popoverTemplate = this.getPopoverTemplateFromId(el);
+    if (!turboFrameUrl && !popoverTemplate) { return; }
 
     // Reset close timer for when hovering over multiple triggers in quick succession.
     // A timer from a previous hover card might still be running. We do not want it to
@@ -156,11 +156,11 @@ export default class HoverCardTriggerController extends ApplicationController {
 
     // Set a delay before showing the hover card
     this.hoverTimeout = window.setTimeout(() => {
-      this.showHoverCard(el, turboFrameUrl, popoverEl);
+      this.showHoverCard(el, turboFrameUrl, popoverTemplate);
     }, this.OPEN_DELAY_IN_MS);
   }
 
-  private showHoverCard(el:HTMLElement, turboFrameUrl:string, popoverElement:HTMLElement|null) {
+  private showHoverCard(el:HTMLElement, turboFrameUrl:string, popoverTemplate:HTMLTemplateElement|null) {
     // Abort if the trigger element is no longer present in the DOM. This can happen when this method is called after a delay.
     if (!this.element.contains(el)) { return; }
     // Do not try to show two hover cards at the same time.
@@ -168,8 +168,8 @@ export default class HoverCardTriggerController extends ApplicationController {
     // The mouse might have left the trigger while we were waiting for the hover delay.
     if (!this.mouseIsHoveringOverTrigger) { return; }
 
-    if (popoverElement) {
-      this.showHoverCardViaExistingElement(el, popoverElement);
+    if (popoverTemplate) {
+      this.showHoverCardViaExistingElement(el, popoverTemplate);
     } else {
       this.loadAndShowHoverCardViaTurboFrame(el, turboFrameUrl);
     }
@@ -194,13 +194,13 @@ export default class HoverCardTriggerController extends ApplicationController {
     });
   }
 
-  private showHoverCardViaExistingElement(targetEl:HTMLElement, protoPopover:HTMLElement) {
+  private showHoverCardViaExistingElement(targetEl:HTMLElement, popoverTemplate:HTMLTemplateElement) {
     const overlay = this.getAndResetOverlay();
     if (!overlay) { return; }
 
     this.moveOverlayToAppropriateParent(overlay, targetEl);
 
-    const popover = this.cloneStaticPopover(overlay, protoPopover);
+    const popover = this.popoverFromTemplate(overlay, popoverTemplate);
 
     this.isShowingHoverCard = true;
     this.previousTarget = targetEl;
@@ -272,11 +272,11 @@ export default class HoverCardTriggerController extends ApplicationController {
     return url === 'about:blank' ? '' : url;
   }
 
-  private getPopoverFromId(el:HTMLElement):HTMLElement|null {
+  private getPopoverTemplateFromId(el:HTMLElement):HTMLTemplateElement|null {
     const id = el.getAttribute('data-hover-card-popover-id');
     if (!id) { return null; }
 
-    return document.getElementById(id);
+    return document.getElementById(id) as HTMLTemplateElement;
   }
 
   private async reposition(element:HTMLElement, target:HTMLElement) {
@@ -317,13 +317,13 @@ export default class HoverCardTriggerController extends ApplicationController {
     return { turboFrame, popover };
   }
 
-  private cloneStaticPopover(overlay:HTMLElement, staticPopover:HTMLElement):HTMLElement {
-    const popover = staticPopover.cloneNode(true) as HTMLElement;
+  private popoverFromTemplate(overlay:HTMLElement, template:HTMLTemplateElement):HTMLElement {
+    const popoverFragment = template.content.cloneNode(true) as DocumentFragment;
 
-    popover.removeAttribute('id');
+    overlay.appendChild(popoverFragment);
+
+    const popover = overlay.children[0] as HTMLElement;
     this.setPopoverAttributes(popover);
-
-    overlay.appendChild(popover);
 
     return popover;
   }
