@@ -47,7 +47,7 @@ class Widget::Filters::WorkPackage < Widget::Filters::Base
                                     model: selected_values.compact,
                                     url: ::API::V3::Utilities::PathHelper::ApiV3Path.work_packages,
                                     resource: "work_packages",
-                                    searchKey: "subjectOrId"
+                                    searchKey: "typeahead"
                                   },
                                   id: "#{filter_class.underscore_name}_select_1",
                                   class: "filter-value advanced-filters--ng-select"
