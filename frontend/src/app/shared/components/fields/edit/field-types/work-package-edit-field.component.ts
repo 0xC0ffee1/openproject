@@ -81,7 +81,7 @@ export class WorkPackageEditFieldComponent extends SelectEditFieldComponent {
     if (query) {
       const filters:ApiV3FilterBuilder = new ApiV3FilterBuilder();
 
-      filters.add('subjectOrId', '**', [query]);
+      filters.add('typeahead', '**', [query]);
 
       filterParams = { filters: filters.toJson() };
     }

@@ -69,7 +69,7 @@ describe('autocompleter', () => {
 
     fixture.componentInstance.resource = 'work_packages' as TOpAutocompleterResource;
     fixture.componentInstance.filters = [];
-    fixture.componentInstance.searchKey = 'subjectOrId';
+    fixture.componentInstance.searchKey = 'typeahead';
     fixture.componentInstance.appendTo = 'body';
     fixture.componentInstance.multiple = false;
     fixture.componentInstance.closeOnSelect = true;
