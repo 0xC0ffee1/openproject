@@ -114,8 +114,10 @@ export class FilterSearchableMultiselectValueComponent extends UntilDestroyedMix
       .initialRequest$
       .pipe(
         switchMap((initialLoad) => {
-          // If we already loaded all values, just compare in the frontend
-          if (initialLoad.count === initialLoad.total) {
+          // If we already loaded all values, just compare in the frontend.
+          // However, for work package ID filter, always make XHR requests to use typeahead filter
+          // which supports searching by type and status names.
+          if (this.filter.id !== 'id' && initialLoad.count === initialLoad.total) {
             return this.matchingItems(this.filterEmptyElements(initialLoad.elements), matching);
           }
 
