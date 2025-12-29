@@ -90,7 +90,7 @@ export class BoardInlineAddAutocompleterComponent implements AfterViewInit {
       .apiV3Service
       .withOptionalProject(this.CurrentProject.id)
       .work_packages
-      .filtered(filters)
+      .filtered(filters, { sortBy: '[["updatedAt","desc"]]' })
       .get()
       .pipe(
         map((collection) => collection.elements),
