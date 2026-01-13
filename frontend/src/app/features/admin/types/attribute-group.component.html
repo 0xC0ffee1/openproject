@@ -1,29 +1,50 @@
-<div class="type-form-conf-group">
-  <div class="group-head">
-    <span class="group-handle icon-drag-handle"></span>
-    <op-group-edit-in-place [name]="group.name"
-      (onValueChange)="rename($event)"
-      class="group-name" />
-      <primer-icon-button
-        icon="x"
-        scheme="invisible"
-        size="small"
-        class="delete-group"
-        tooltip-direction="w"
-        [label]="text.delete_group"
-        (clicked)="deleteGroup.emit()"
-      />
+<div class="Box Box--condensed type-form-conf-group">
+  <div
+    aria-roledescription="Draggable item"
+    class="Box-header group-head"
+    tabindex="0">
+    <span
+      aria-label="Drag to reorder"
+      class="group-handle-button"
+      role="button">
+      <svg grabber-icon size="small" class="group-handle"></svg>
+    </span>
+    <op-group-edit-in-place class="Box-title group-name"
+      [name]="group.name"
+      (onValueChange)="rename($event)" />
+    <primer-icon-button
+      icon="x"
+      scheme="invisible"
+      size="small"
+      class="delete-group"
+      tooltip-direction="w"
+      [label]="text.delete_group"
+      (clicked)="deleteGroup.emit()"
+    />
   </div>
-  <div class="attributes" dragula="attributes" [(dragulaModel)]="group.attributes">
+  <ul dragula="attributes" [(dragulaModel)]="group.attributes">
     @for (attribute of group.attributes; track attribute) {
-      <div
-        class="type-form-conf-attribute"
-        [attr.data-key]="attribute.key">
-        <span class="attribute-handle icon-drag-handle"></span>
+      <li
+        aria-roledescription="Draggable item"
+        class="Box-row Box-row--focus-blue Box-row--hover-gray type-form-conf-attribute"
+        role="option"
+        tabindex="0"
+        [attr.aria-selected]="focusedKey === attribute.key"
+        [attr.data-key]="attribute.key"
+        [ngClass]="{ 'navigation-focus': focusedKey === attribute.key }"
+        (blur)="focusedKey = null"
+        (focus)="focusedKey = attribute.key">
+        <span
+          aria-label="Drag to reorder"
+          class="Box-row--drag-button attribute-handle-button"
+          role="button">
+          <svg grabber-icon size="small" class="attribute-handle"></svg>
+        </span>
         <span class="attribute-name">
           {{ attribute.translation }}
           @if (attribute.is_cf) {
-            <span class="attribute-cf-label"
+            <span
+              class="attribute-cf-label"
               [textContent]="text.custom_field">
             </span>
           }
@@ -37,7 +58,7 @@
           [label]="text.remove_attribute"
           (clicked)="removeFromGroup(attribute)"
         />
-      </div>
+      </li>
     }
-  </div>
+  </ul>
 </div> <!-- END attribute group -->

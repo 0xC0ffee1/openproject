@@ -1,0 +1,19 @@
+<span class="Button-content">
+  @if (hasLeadingVisual()) {
+    <span class="Button-visual Button-leadingVisual">
+      <ng-content select="[leadingVisual]" />
+    </span>
+  }
+  <span class="Button-label"><ng-content /></span>
+  @if (hasTrailingVisual()) {
+    <span class="Button-visual Button-trailingVisual">
+      <ng-content select="[trailingVisual]" />
+    </span>
+  }
+</span>
+
+@if (hasTrailingAction()) {
+  <span class="Button-visual Button-trailingAction">
+    <ng-content select="[trailingAction]" />
+  </span>
+}

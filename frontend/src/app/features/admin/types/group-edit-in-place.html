@@ -1,19 +1,19 @@
 @if (!editing) {
   <div
-    (click)="startEditing()"
+    class="group-edit-handler"
     [textContent]="name"
-    class="group-edit-handler">
+    (click)="startEditing()">
   </div>
 }
 @if (editing) {
   <input
     #nameInput
     class="group-edit-in-place--input"
-    type="text"
     opAutofocus
-    [(ngModel)]="editedName"
+    type="text"
     [attr.placeholder]="placeholder"
+    [(ngModel)]="editedName"
     (blur)="saveEdition($event)"
-    (keydown.escape)="reset()"
-    (keydown.enter)="saveEdition($event)">
+    (keydown.enter)="saveEdition($event)"
+    (keydown.escape)="reset()">
 }

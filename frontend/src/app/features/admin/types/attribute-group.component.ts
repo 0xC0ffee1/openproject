@@ -17,6 +17,8 @@ export class TypeFormAttributeGroupComponent {
 
   @Output() public removeAttribute = new EventEmitter<TypeFormAttribute>();
 
+  @Input() focusedKey:string|null = null;
+
   text = {
     custom_field: this.I18n.t('js.admin.type_form.custom_field'),
     delete_group: this.I18n.t('js.admin.type_form.delete_group'),

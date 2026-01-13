@@ -1,78 +1,43 @@
-<div class="toolbar-container -with-dropdown">
-  <div class="toolbar toolbar_empty-title">
-    <ul class="toolbar-items">
-      <li class="toolbar-item">
-        <button type="button -primary"
-          class="form-configuration--reset button"
-          (click)="resetToDefault($event)">
-          <op-icon icon-classes="button--icon icon-undo" />
-          <span class="button--text" [textContent]="text.reset"></span>
-        </button>
-      </li>
-      @if (typeBanner.eeAvailable) {
-        <li
-          class="toolbar-item drop-down">
-          <a class="form-configuration--add-group button -primary" aria-haspopup="true">
-            <op-icon icon-classes="button--icon icon-add" />
-            <span class="button--text" [textContent]="text.label_group"></span>
-            <op-icon icon-classes="button--dropdown-indicator" />
-          </a>
-          <ul class="menu-drop-down-container">
-            <li>
-              <button
-                type="button"
-                class="menu-item form-configuration--add-group"
-                [textContent]="text.add_group"
-                (click)="createGroup('attribute', '')"
-                >
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="menu-item form-configuration--add-group"
-                [textContent]="text.add_table"
-                (click)="addGroupAndOpenQuery()"
-                >
-              </button>
-            </li>
-          </ul>
-        </li>
-      }
-    </ul>
-  </div>
-</div>
-
 <div class="grid-block wrap">
   <div class="grid-content small-12 medium-6">
-    <div id="draggable-groups" dragula="groups" [(dragulaModel)]="groups">
+    <div dragula="groups" id="draggable-groups" [(dragulaModel)]="groups">
       @for (group of groups; track group) {
         @if (group.type === 'attribute') {
-          <op-type-form-attribute-group (removeAttribute)="deactivateAttribute($event)"
+          <op-type-form-attribute-group [group]="group"
             (deleteGroup)="deleteGroup(group)"
-            [group]="group" />
+            (removeAttribute)="deactivateAttribute($event)" />
         }
         @if (group.type === 'query') {
-          <op-type-form-query-group (editQuery)="editQuery(group)"
+          <op-type-form-query-group [group]="group"
             (deleteGroup)="deleteGroup(group)"
-            [group]="group" />
+            (editQuery)="editQuery(group)" />
         }
       }
     </div>
   </div>
   <div class="grid-content small-12 medium-6">
-    <div id="type-form-conf-inactive-group">
-      <div class="group-head">
-        <span class="group-name" [textContent]="text.label_inactive"></span>
-        &ngsp;
-        <span class="advice" [textContent]="text.drag_to_activate"></span>
+    <div class="Box Box--condensed" id="type-form-conf-inactive-group">
+      <div class="Box-header">
+        <h3 class="Box-title" [textContent]="text.label_inactive"></h3>
+        <span class="color-fg-subtle" [textContent]="text.drag_to_activate"></span>
       </div>
-      <div class="attributes" dragula="attributes" [(dragulaModel)]="inactives">
+      <ul dragula="attributes" [(dragulaModel)]="inactives">
         @for (inactive_attribute of inactives; track inactive_attribute) {
-          <div
-            class="type-form-conf-attribute"
-            [attr.data-key]="inactive_attribute.key">
-            <span class="attribute-handle icon-drag-handle"></span>
+          <li
+            class="Box-row Box-row--focus-blue Box-row--hover-gray type-form-conf-attribute"
+            role="option"
+            tabindex="0"
+            [attr.aria-selected]="{ 'navigation-focus': focusedKey === inactive_attribute.key }"
+            [attr.data-key]="inactive_attribute.key"
+            [ngClass]="{ 'navigation-focus': focusedKey === inactive_attribute.key }"
+            (blur)="focusedKey = null"
+            (focus)="focusedKey = inactive_attribute.key">
+            <span
+              aria-label="Drag to reorder"
+              class="attribute-handle-button"
+              role="button">
+              <primer-grabber-icon class="attribute-handle" size="16" />
+            </span>
             <span class="attribute-name">
               {{ inactive_attribute.translation }}
               @if (inactive_attribute.is_cf) {
@@ -82,9 +47,9 @@
                 </span>
               }
             </span>
-          </div>
+          </li>
         }
-      </div>
+      </ul>
     </div>
   </div>
 </div><!-- END type form configurator -->

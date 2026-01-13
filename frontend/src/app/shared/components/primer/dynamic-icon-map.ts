@@ -26,10 +26,12 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { starIconData, SVGData, xIconData } from '@openproject/octicons-angular';
+import { plusIconData, starIconData, SVGData, undoIconData, xIconData } from '@openproject/octicons-angular';
 
 export const ICON_MAP:Record<string, SVGData> = {
   x: xIconData,
   star: starIconData,
+  plus: plusIconData,
+  undo: undoIconData
   // TODO add more icons
 };

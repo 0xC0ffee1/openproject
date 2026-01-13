@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import {
   ExternalRelationQueryConfigurationService,
@@ -39,16 +39,14 @@ export const emptyTypeGroup = '__empty';
   ],
   standalone: false,
 })
-export class TypeFormConfigurationComponent extends UntilDestroyedMixin implements OnInit, AfterViewInit, OnDestroy {
+export class TypeFormConfigurationComponent extends UntilDestroyedMixin implements OnInit, OnDestroy {
+  @Input() focusedKey:string|null = null;
+
   public text = {
     drag_to_activate: this.I18n.t('js.admin.type_form.drag_to_activate'),
-    reset: this.I18n.t('js.admin.type_form.reset_to_defaults'),
-    label_group: this.I18n.t('js.label_group'),
     new_group: this.I18n.t('js.admin.type_form.new_group'),
     label_inactive: this.I18n.t('js.admin.type_form.inactive'),
     custom_field: this.I18n.t('js.admin.type_form.custom_field'),
-    add_group: this.I18n.t('js.admin.type_form.add_group'),
-    add_table: this.I18n.t('js.admin.type_form.add_table'),
   };
 
   private autoscroll:any;
@@ -56,8 +54,6 @@ export class TypeFormConfigurationComponent extends UntilDestroyedMixin implemen
   private element:HTMLElement;
 
   private form:HTMLFormElement;
-
-  private submit:HTMLButtonElement;
 
   public groups:TypeGroup[] = [];
 
@@ -98,25 +94,6 @@ export class TypeFormConfigurationComponent extends UntilDestroyedMixin implemen
     this.element = this.elementRef.nativeElement;
     this.no_filter_query = this.element.dataset.noFilterQuery!;
     this.form = this.element.closest('form')!;
-    this.submit = this.form.querySelector('.form-configuration--save')!;
-
-    // In the following we are triggering the form submit ourselves to work around
-    // a firefox shortcoming. But to avoid double submits which are sometimes not canceled fast
-    // enough, we need to memoize whether we have already submitted.
-    let submitted = false;
-
-    this.form.addEventListener('submit', () => {
-      submitted = true;
-    });
-
-    // Capture mousedown on button because firefox breaks blur on click
-    this.submit.addEventListener('mousedown', () => {
-      setTimeout(() => {
-        if (!submitted) {
-          this.form.requestSubmit();
-        }
-      }, 50);
-    });
 
     // Capture regular form submit
     this.form.addEventListener('submit', this.eventListeners.typeFormUpdater);
@@ -163,16 +140,35 @@ export class TypeFormConfigurationComponent extends UntilDestroyedMixin implemen
     );
   }
 
-  ngAfterViewInit():void {
-    const menu = this.elementRef.nativeElement.querySelector<HTMLElement>('.toolbar-items')!;
-    installMenuLogic(menu);
-  }
-
   ngOnDestroy():void {
     this.dragula.destroy('groups');
     this.dragula.destroy('attributes');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
     this.autoscroll.destroy();
+  }
+
+  resetToDefault($event:Event):boolean {
+    this.confirmDialog
+      .confirm({
+        text: {
+          title: this.I18n.t('js.types.attribute_groups.reset_title'),
+          text: this.I18n.t('js.types.attribute_groups.confirm_reset'),
+          button_continue: this.I18n.t('js.label_reset'),
+        },
+      })
+      .then(() => {
+        const input = this.form.querySelector<HTMLInputElement>('input#type_attribute_groups')!;
+        input.value = JSON.stringify([]);
+
+        // Disable our form handler that updates the attribute groups
+        this.form.removeEventListener('submit', this.eventListeners.typeFormUpdater);
+        this.form.requestSubmit();
+      })
+      .catch(() => {
+      });
+
+    $event.preventDefault();
+    return false;
   }
 
   deactivateAttribute(attribute:TypeFormAttribute):void {
@@ -231,30 +227,6 @@ export class TypeFormConfigurationComponent extends UntilDestroyedMixin implemen
 
     this.groups.unshift(group);
     return group;
-  }
-
-  resetToDefault($event:Event):boolean {
-    this.confirmDialog
-      .confirm({
-        text: {
-          title: this.I18n.t('js.types.attribute_groups.reset_title'),
-          text: this.I18n.t('js.types.attribute_groups.confirm_reset'),
-          button_continue: this.I18n.t('js.label_reset'),
-        },
-      })
-      .then(() => {
-        const input = this.form.querySelector<HTMLInputElement>('input#type_attribute_groups')!;
-        input.value = JSON.stringify([]);
-
-        // Disable our form handler that updates the attribute groups
-        this.form.removeEventListener('submit', this.eventListeners.typeFormUpdater);
-        this.form.requestSubmit();
-      })
-      .catch(() => {
-      });
-
-    $event.preventDefault();
-    return false;
   }
 
   private updateInactives(newValue:TypeFormAttribute[]):void {

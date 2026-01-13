@@ -1,100 +1,44 @@
 .type-form-conf-group,
 #type-form-conf-inactive-group
-  border-radius: 2px
-  padding: 0px 3px 1px 3px
-  margin-bottom: 20px
 
-  .group-head
-    color: var(--fgColor-white)
-    padding: 7px 4px 8px 0px
-    text-transform: uppercase
-    .group-handle
-      cursor: -webkit-grab
-      cursor: grab
-      color: var(--fgColor-white)
-      font-size: 12px
-    op-group-edit-in-place
-      display: inline-block
-      .group-edit-in-place--input
-        color: var(--fgColor-white)
-    .delete-group
-      .Button-visual
-        color: var(--fgColor-white)
-  .attributes
-    min-height: 29px
-
-.type-form-conf-group
-  background: var(--accent-color)
-  .group-name
-    border-color: var(--accent-color)
-    border-width: 1px
-    border-style: solid
-    &:hover
-      cursor: text
-      border-color: var(--borderColor-default)
-      background: var(--control-bgColor-activ)
-
-  &.-error
-    background: var(--content-form-error-color)
-    .group-name
-      border-color: var(--content-form-error-color)
-    .group-handle
-      color: var(--fgColor-white)
-
-
-#type-form-conf-inactive-group
-  background: var(--fgColor-muted)
-  .visibility-check
-    visibility: hidden
-  .group-head
-    display: block
-  .advice
-    text-transform: initial
-
-.type-form-conf-attribute
-  padding: 7px 7px 7px 0px
-  margin-bottom: 2px
-
-  background: var(--type-form-conf-attribute--background)
-
-  border-top-left-radius: 2px
-  border-bottom-left-radius: 2px
-  border-top-right-radius: 2px
-  border-bottom-right-radius: 2px
-  .attribute-handle
-    cursor: -webkit-grab
+  .group-handle-button,
+  .attribute-handle-button
     cursor: grab
-    color: var(--body-font-color)
-    font-size: 12px
-  .delete-attribute:before
-    color: var(--body-font-color)
-
-.attribute-cf-label
-  font-size: 0.8rem
-  padding-left: 2px
-  color: #4d4d4d
-
-#type-form-conf-group-template,
-#type-form-conf-query-template
-  display: none
 
 .group-head,
 .type-form-conf-attribute
   display: flex
   align-items: baseline
-  justify-content: space-between
-  .icon-drag-handle
-    flex-basis: 15px
+  gap: var(--controlStack-medium-gap-condensed)
+
+  &.Box-header,
+  &.Box-row  
+    padding-left: var(--stack-padding-spacious)
+    padding-right: var(--stack-padding-spacious) 
+
+  &:has(.attribute-handle-button).Box-header,
+  &:has(.attribute-handle-button).Box-row,
+  &:has(.group-handle-button).Box-header,
+  &:has(.group-handle-button).Box-row
+    padding-left: var(--stack-padding-condensed)
+    padding-right: var(--stack-padding-condensed)
+
+  .attribute-handle-button,
+  .group-handle-button
+    flex: 0 0 var(--stack-padding-normal)
+    width: var(--stack-padding-condensed)
+
   .attribute-name,
   .group-name
-    flex-basis: 90%
+    flex: 1 1 auto
     @include text-shortener(false)
 
+  .attribute-remove-button,
+  .group-delete-button
+    flex: 0 0 auto
 
-// Query group styles
-.type-form-query
-  padding: 10px
-  cursor: pointer
-  color: white
-
-// Ensure dropdown is shown
+.group-body,
+.group-foot
+  &.Box-body, &.Box-footer
+    padding-left: var(--controlStack-medium-gap-spacious)
+    padding-right: var(--controlStack-medium-gap-spacious)
