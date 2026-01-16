@@ -1,4 +1,4 @@
-import { Directive, inject } from '@angular/core';
+import { Directive } from '@angular/core';
 import { DynamicIconDirective } from './dynamic-icon.directive';
 
 @Directive({ 
