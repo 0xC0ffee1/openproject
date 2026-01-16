@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import {
   ExternalRelationQueryConfigurationService,
