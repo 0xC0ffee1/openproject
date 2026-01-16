@@ -28,7 +28,7 @@
 
 /* eslint-disable @angular-eslint/component-selector, @angular-eslint/no-input-rename */
 
-import { AfterContentInit, ChangeDetectionStrategy, Component, computed, contentChild, ContentChild, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, contentChild, input, output } from '@angular/core';
 import { generateId } from 'core-app/shared/helpers/dom-helpers';
 import { IconModule } from '../icon/icon.module';
 import { AbstractBaseButtonDirective } from './abstract-base-button.directive';
