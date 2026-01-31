@@ -26,19 +26,28 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import 'jquery.cookie';
-
+// Initialize the RB namespace on window if it doesn't exist
 // @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
-if (window.RB === null || window.RB === undefined) {
-  // @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
-  window.RB = {};
-}
+window.RB ??= {};
+
+// Create a global RB reference for use in this file
+// @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
+const RB = window.RB;
+
+RB.UserPreferences = {
+  get(key:string) {
+    return localStorage.getItem(key);
+  },
+
+  set(key:string, value:any) {
+    localStorage.setItem(key, String(value));
+  },
+};
 
 (function ($) {
   let object:any;
   let Factory;
   let Dialog;
-  let UserPreferences;
 
   object = {
     // Douglas Crockford's technique for object extension
@@ -117,24 +126,7 @@ if (window.RB === null || window.RB === undefined) {
     },
   });
 
-  // Abstract the user preference from the rest of the RB objects
-  // so that we can change the underlying implementation as needed
-  UserPreferences = object.create({
-    get(key:any) {
-      return $.cookie(key);
-    },
-
-    set(key:any, value:any) {
-      $.cookie(key, value, { expires: 365 * 10 });
-    },
-  });
-
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Object = object;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Factory = Factory;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Dialog = Dialog;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
-  RB.UserPreferences = UserPreferences;
 }(jQuery));
