@@ -26,13 +26,24 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
+/**
+ * Initialize jQuery 4 + jquery-migrate as globals for legacy code.
+ *
+ * This module sets up window.jQuery and window.$ for compatibility with
+ * legacy jQuery plugins (jquery-ui, tablesorter) that expect these globals.
+ *
+ * Import this BEFORE importing any jQuery-dependent libraries.
+ */
+
 import jQuery from 'jquery';
 import 'jquery-migrate';
 
 declare global {
   interface Window {
     jQuery:typeof jQuery;
+    $:typeof jQuery;
   }
 }
 
 window.jQuery = jQuery;
+window.$ = jQuery;

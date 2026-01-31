@@ -32,6 +32,7 @@ import { Controller } from '@hotwired/stimulus';
 import { FetchRequestError, post, ValidationError } from 'core-stimulus/helpers/request-helpers';
 import dragula from 'dragula';
 import jQuery from 'jquery';
+import 'core-app/core/setup-legacy/init-jquery';
 import 'tablesorter';
 
 declare global {

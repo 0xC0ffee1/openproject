@@ -26,6 +26,9 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
+import jQuery from 'jquery';
+import './common';
+
 // Initialize everything after DOM is loaded
 jQuery(($) => {
   let defaultDialogColor:any; // this var is used as cache for some computation in

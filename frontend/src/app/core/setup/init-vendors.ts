@@ -33,14 +33,6 @@
 // Lodash
 import lodash from 'lodash';
 
-// Jquery UI
-// import 'jquery-ui/ui/position';
-// import 'jquery-ui/ui/disable-selection';
-// import 'jquery-ui/ui/widgets/sortable';
-// import 'jquery-ui/ui/widgets/dialog';
-// import 'jquery-ui/ui/widgets/tooltip';
-import 'core-vendor/jquery-ui-1.14.1/jquery-ui';
-
 import moment from 'moment';
 import './init-moment-locales';
 

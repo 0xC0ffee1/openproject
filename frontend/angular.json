@@ -23,7 +23,6 @@
               "moment-timezone",
               "observable-array",
               "dragula",
-              "jquery",
               "contra/emitter",
               "crossvent",
               "create-point-cb",
@@ -76,11 +75,6 @@
               }
             },
             "scripts": [
-              {
-                "input": "node_modules/jquery/dist/jquery.min.js",
-                "inject": false,
-                "bundleName": "jquery"
-              },
               {
                 "input": "node_modules/openapi-explorer/dist/browser/openapi-explorer.min.js",
                 "inject": false,

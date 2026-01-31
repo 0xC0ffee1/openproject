@@ -26,6 +26,9 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
+import jQuery from 'jquery';
+import './common';
+
 /***************************************
   TASKBOARD
 ***************************************/

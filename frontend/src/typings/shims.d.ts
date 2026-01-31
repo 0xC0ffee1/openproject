@@ -54,6 +54,7 @@ declare module '@hotwired/turbo' {
 declare global {
   const _:typeof TLodash;
   const I18n:I18n;
+  const RB:any;
 }
 
 declare global {
@@ -66,6 +67,7 @@ declare global {
     onboardingTourInstance:any;
     screenfull:Screenfull;
     MiniProfiler?:{ pageTransition:() => void };
+    RB:any;
   }
 
   interface JQuery {

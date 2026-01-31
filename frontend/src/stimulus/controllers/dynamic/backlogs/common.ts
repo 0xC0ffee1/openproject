@@ -26,12 +26,21 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
+import jQuery from 'jquery';
+import 'core-app/core/setup-legacy/init-jquery';
+
+// Jquery UI
+// import 'jquery-ui/ui/position';
+// import 'jquery-ui/ui/disable-selection';
+// import 'jquery-ui/ui/widgets/sortable';
+// import 'jquery-ui/ui/widgets/dialog';
+// import 'jquery-ui/ui/widgets/tooltip';
+import 'core-vendor/jquery-ui-1.14.1/jquery-ui';
+
 // Initialize the RB namespace on window if it doesn't exist
-// @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
 window.RB ??= {};
 
 // Create a global RB reference for use in this file
-// @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
 const RB = window.RB;
 
 RB.UserPreferences = {

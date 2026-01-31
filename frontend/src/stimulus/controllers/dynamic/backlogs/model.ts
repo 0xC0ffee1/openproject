@@ -27,6 +27,8 @@
 //++
 
 import { FetchRequest, FetchResponse } from '@rails/request.js';
+import jQuery from 'jquery';
+import './common';
 
 /***************************************
   MODEL
