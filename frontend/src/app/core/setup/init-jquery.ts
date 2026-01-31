@@ -27,6 +27,7 @@
 //++
 
 import jQuery from 'jquery';
+import 'jquery-migrate';
 
 declare global {
   interface Window {
