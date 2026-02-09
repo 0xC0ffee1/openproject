@@ -29,6 +29,7 @@
  */
 
 import { Controller } from '@hotwired/stimulus';
+import { toggleEnabled } from 'core-app/shared/helpers/dom-helpers';
 
 export default class RolesController extends Controller {
   static targets = [
@@ -59,12 +60,10 @@ export default class RolesController extends Controller {
     this.toggleEnabled(this.globalPermissionsTarget, this.globalRoleValue);
   }
 
-  toggleEnabled(target:HTMLElement, enabled:boolean) {
-    target.hidden = !enabled;
+  private toggleEnabled(target:HTMLElement, enabled:boolean) {
+    toggleEnabled(target, enabled, true);
     target
       .querySelectorAll('input,select')
-      .forEach((input:HTMLInputElement) => {
-        input.disabled = !enabled;
-      });
+      .forEach((input:HTMLInputElement) => toggleEnabled(input, enabled));
   }
 }
