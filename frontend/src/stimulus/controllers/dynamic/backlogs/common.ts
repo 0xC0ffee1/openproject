@@ -35,7 +35,7 @@ import 'core-app/core/setup-legacy/init-jquery';
 // import 'jquery-ui/ui/widgets/sortable';
 // import 'jquery-ui/ui/widgets/dialog';
 // import 'jquery-ui/ui/widgets/tooltip';
-import 'core-vendor/jquery-ui-1.14.1/jquery-ui';
+import 'core-vendor/jquery-ui-1.14.2/jquery-ui';
 
 // Initialize the RB namespace on window if it doesn't exist
 window.RB ??= {};
