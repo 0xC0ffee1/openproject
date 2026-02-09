@@ -32,7 +32,6 @@ jQuery(($) => {
                           // the inner function. -> Do not move to where it
                           // actually belongs!
 
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Factory.initialize(RB.Taskboard, $('#taskboard'));
 
   $('#assigned_to_id_options').change(function () {

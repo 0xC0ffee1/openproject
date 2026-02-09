@@ -26,9 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.EditableInplace = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create(RB.Model, {
 
     displayEditor(editor:any) {

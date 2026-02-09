@@ -29,9 +29,7 @@
 /**************************************
   WORK PACKAGE
 ***************************************/
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.WorkPackage = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create(RB.Model, {
 
     initialize(el:any) {

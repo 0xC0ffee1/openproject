@@ -30,9 +30,7 @@
   IMPEDIMENT
 ***************************************/
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Impediment = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create(RB.Task, {
 
     initialize(el:any) {
@@ -65,18 +63,15 @@ RB.Impediment = (function ($) {
 
       data = `${j.find('.editor').serialize()
                  }&is_impediment=true`
-                 // @ts-expect-error TS(2304): Cannot find name 'RB'.
                  + `&version_id=${RB.constants.sprint_id
                  }&status_id=${statusID
                  }&prev=${prev.length === 1 ? prev.data('this').getID() : ''
                  }${this.isNew() ? '' : `&id=${j.children('.id').text()}`}`;
 
       if (this.isNew()) {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         url = RB.urlFor('create_impediment', { sprint_id: RB.constants.sprint_id });
         method = 'post';
       } else {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         url = RB.urlFor('update_impediment', { id: this.getID(), sprint_id: RB.constants.sprint_id });
         method = 'put';
       }
