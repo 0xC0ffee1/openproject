@@ -2,6 +2,7 @@ import { environment } from '../environments/environment';
 import { OpApplicationController } from './controllers/op-application.controller';
 import MainMenuController from './controllers/dynamic/menus/main.controller';
 import OpDisableWhenCheckedController from './controllers/disable-when-checked.controller';
+import OpDisableWhenValueSelectedController from './controllers/disable-when-value-selected.controller';
 import PrintController from './controllers/print.controller';
 import RefreshOnFormChangesController from './controllers/refresh-on-form-changes.controller';
 import FormPreviewController from './controllers/form-preview.controller';
@@ -51,6 +52,7 @@ OpenProjectStimulusApplication.preregister('application', OpApplicationControlle
 OpenProjectStimulusApplication.preregister('async-dialog', AsyncDialogController);
 OpenProjectStimulusApplication.preregister('disable-when-checked', OpDisableWhenCheckedController);
 OpenProjectStimulusApplication.preregister('disable-when-clicked', DisableWhenClickedController);
+OpenProjectStimulusApplication.preregister('disable-when-value-selected', OpDisableWhenValueSelectedController);
 OpenProjectStimulusApplication.preregister('flash', FlashController);
 OpenProjectStimulusApplication.preregister('menus--main', MainMenuController);
 OpenProjectStimulusApplication.preregister('require-password-confirmation', RequirePasswordConfirmationController);
