@@ -29,6 +29,7 @@
  */
 
 import type { Plugin } from 'esbuild';
+import * as fs from 'fs';
 
 const customConfigPlugin:Plugin = {
   name: 'custom-config',
@@ -39,4 +40,41 @@ const customConfigPlugin:Plugin = {
   }
 }
 
-export default [customConfigPlugin];
+const jqueryInjectionPlugin:Plugin = {
+  name: 'jquery-injection',
+  setup(build) {
+    const path = require('path');
+
+    // Intercept the import of 'core-vendor/enjoyhint'
+    build.onResolve({ filter: /^core-vendor\/enjoyhint$/ }, () => {
+      return {
+        path: 'enjoyhint-with-jquery',
+        namespace: 'jquery-wrapper',
+      };
+    });
+
+    // Provide the wrapper content
+    build.onLoad({ filter: /.*/, namespace: 'jquery-wrapper' }, async () => {
+      const workingDir = build.initialOptions.absWorkingDir || process.cwd();
+      const enjoyhintPath = path.join(workingDir, 'src', 'vendor', 'enjoyhint.js');
+      const contents = await fs.promises.readFile(enjoyhintPath, 'utf8');
+
+      // Wrap with jQuery import
+      const wrappedCode = `
+import jQuery from 'jquery';
+window.jQuery = jQuery;
+window.$ = jQuery;
+
+${contents}
+`;
+
+      return {
+        contents: wrappedCode,
+        loader: 'js',
+        resolveDir: path.join(workingDir, 'src'),
+      };
+    });
+  }
+}
+
+export default [customConfigPlugin, jqueryInjectionPlugin];
