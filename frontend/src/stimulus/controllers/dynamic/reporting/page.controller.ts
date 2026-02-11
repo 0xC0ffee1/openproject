@@ -34,6 +34,7 @@ import dragula from 'dragula';
 import jQuery from 'jquery';
 import 'core-app/core/setup-legacy/init-jquery';
 import 'tablesorter';
+import { ensureId } from 'core-app/shared/helpers/dom-helpers';
 
 declare global {
   interface Window {
@@ -630,7 +631,7 @@ export default class PageController extends Controller {
       .attr('class', 'group-by--selected-element')
       .attr('data-group-by', field);
 
-    groupBy.uniqueId(); // give it a unique id
+    ensureId(groupBy[0]); // give it a unique id
 
     const label = this.createLabel(groupBy, caption);
     groupBy.append(label);
