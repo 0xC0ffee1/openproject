@@ -48,7 +48,7 @@ module EnterpriseEdition
     def description
       @description || begin
         if I18n.exists?(:description_html, scope: i18n_scope)
-          I18n.t(:description_html, scope: i18n_scope).html_safe
+          helpers.t(:description_html, scope: i18n_scope)
         else
           I18n.t(:description, scope: i18n_scope)
         end
@@ -85,7 +85,7 @@ module EnterpriseEdition
         I18n.t("ee.upsell.plan_name", plan: plan.capitalize)
       end
 
-      I18n.t("ee.upsell.plan_text_html", plan_name:).html_safe
+      helpers.t("ee.upsell.plan_text_html", plan_name:)
     end
   end
 end

@@ -20,7 +20,7 @@
     <h2><%= t "two_factor_authentication.label_two_factor_authentication" %></h2>
     <% identifier = @used_device.request_2fa_identifier(@strategy.channel) %>
     <% if @used_device.input_based? %>
-      <p><%= raw I18n.t("two_factor_authentication.devices.2fa_from_input", device_name: identifier) %></p>
+      <p><%= t("two_factor_authentication.devices.2fa_from_input_html", device_name: identifier) %></p>
       <hr class="form--separator">
       <div class="form--field -wide-label">
         <%= styled_label_tag "otp", t(:field_otp) %>
@@ -29,7 +29,7 @@
         </div>
       </div>
     <% else %>
-      <p><%= raw I18n.t("two_factor_authentication.devices.2fa_from_webauthn", device_name: identifier) %></p>
+      <p><%= t("two_factor_authentication.devices.2fa_from_webauthn_html", device_name: identifier) %></p>
       <hr class="form--separator">
       <%= hidden_field_tag "webauthn_credential", nil, "data-two-factor-authentication-target": "webauthnCredential" %>
       <div class="form--field-error" data-two-factor-authentication-target="errorDisplay"></div>

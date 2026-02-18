@@ -283,7 +283,7 @@ class AccountController < ApplicationController
       ldap_auth_source_id: user.ldap_auth_source_id
     }
 
-    flash[:notice] = I18n.t("account.auth_source_login", login: user.login).html_safe
+    flash[:notice] = helpers.t("account.auth_source_login_html", login: user.login)
 
     redirect_to signin_path(username: user.login)
   end

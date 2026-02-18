@@ -86,7 +86,7 @@ class RecurringMeetingsController < ApplicationController
     @recurring_meeting = call.result
 
     if call.success?
-      flash[:notice] = I18n.t(:notice_successful_create).html_safe
+      flash[:notice] = I18n.t(:notice_successful_create)
       redirect_to project_meeting_path(@recurring_meeting.project, @recurring_meeting.template),
                   status: :see_other
     else

@@ -198,17 +198,15 @@ module Projects
     def project_status
       return nil unless user_can_view_project_attributes?
 
-      content = "".html_safe
-
       status_code = project.status_code
-
       if status_code
         classes = helpers.project_status_css_class(status_code)
-        content << content_tag(:span, "", class: "project-status--bulb -inline #{classes}")
-        content << content_tag(:span, helpers.project_status_name(status_code), class: "project-status--name #{classes}")
-      end
 
-      content
+        capture do
+          concat content_tag(:span, "", class: "project-status--bulb -inline #{classes}")
+          concat content_tag(:span, helpers.project_status_name(status_code), class: "project-status--name #{classes}")
+        end
+      end
     end
 
     def status_explanation
@@ -237,7 +235,7 @@ module Projects
 
     def row_css_class
       classes = %w[basics context-menu--reveal op-project-row-component]
-      classes << project_css_classes
+      classes += project_css_classes
       classes << row_css_level_classes
 
       classes.join(" ")
@@ -256,13 +254,13 @@ module Projects
     end
 
     def project_css_classes
-      s = " project ".html_safe
+      output = ["project"]
 
-      s << " root" if project.root?
-      s << " child" if project.child?
-      s << (project.leaf? ? " leaf" : " parent")
+      output << "root" if project.root?
+      output << "child" if project.child?
+      output << (project.leaf? ? "leaf" : "parent")
 
-      s
+      output
     end
 
     def column_css_class(column)

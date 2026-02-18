@@ -28,11 +28,11 @@ See COPYRIGHT and LICENSE files for more details.
 ++#%>
 <%= fields_for :pref, @user.pref, builder: TabularFormBuilder, lang: current_language do |pref_fields| %>
   <%= render Settings::TimeZoneSettingComponent.new(
-        "time_zone",
-        form: pref_fields,
-        include_blank: false,
-        container_class: defined?(input_size) ? "-#{input_size}" : "-wide"
-      ) %>
+    "time_zone",
+    form: pref_fields,
+    include_blank: false,
+    container_class: defined?(input_size) ? "-#{input_size}" : "-wide"
+  ) %>
   <div class="form--field">
     <%= pref_fields.select :theme, theme_options_for_select, container_class: "-middle" %> <!-- TODO -->
     <div class="form--field-instructions">
@@ -44,10 +44,8 @@ See COPYRIGHT and LICENSE files for more details.
     <%= pref_fields.check_box :disable_keyboard_shortcuts,
                               label: I18n.t("activerecord.attributes.user_preference.disable_keyboard_shortcuts") %>
     <span class="form--field-instructions">
-      <%= I18n.t(
-            "activerecord.attributes.user_preference.disable_keyboard_shortcuts_caption_html",
-            href: OpenProject::Static::Links.url_for(:shortcuts)
-          ).html_safe %>
+      <%= link_translate(:"user_preferences.disable_keyboard_shortcuts_caption",
+                         links: { docs_url: %i[shortcuts] }) %>
     </span>
   </div>
 <% end %>

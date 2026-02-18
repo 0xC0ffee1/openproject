@@ -75,8 +75,7 @@ en:
       error_invalid_settings: "The 2FA strategies you selected are invalid"
       failed_to_save_settings: "Failed to update 2FA settings: %{message}"
     admin:
-      self_edit_path: "To add or modify your own 2FA devices, please go to %{self_edit_link}"
-      self_edit_link_name: "Two-factor authentication on your account page"
+      self_edit_path: "To add or modify your own 2FA devices, please go to the [Two-factor authentication on your account page](self_edit_link)"
       self_edit_forbidden: "You may not edit your own 2FA devices on this path. Go to My Account > Two factor authentication instead."
       no_devices_for_user: "No 2FA device has been registered for this user."
       all_devices_deleted: "All 2FA devices of this user have been deleted"
@@ -124,8 +123,8 @@ en:
       failed_to_delete: "Failed to delete 2FA device."
       is_default_cannot_delete: "The device is marked as default and cannot be deleted due to an active security policy. Mark another device as default before deleting."
       not_existing: "No 2FA device has been registered for your account."
-      2fa_from_input: Please enter the code from your <strong>%{device_name}</strong> to verify your identity.
-      2fa_from_webauthn: Please provide the WebAuthn device <strong>%{device_name}</strong>. If it is USB based make sure to plug it in and touch it. Then click the sign in button.
+      2fa_from_input_html: Please enter the code from your <strong>%{device_name}</strong> to verify your identity.
+      2fa_from_webauthn_html: Please provide the WebAuthn device <strong>%{device_name}</strong>. If it is USB based make sure to plug it in and touch it. Then click the sign in button.
       webauthn:
         title: "WebAuthn"
         description: Register a FIDO2 device (like YubiKey) or the secure enclave of your mobile device.

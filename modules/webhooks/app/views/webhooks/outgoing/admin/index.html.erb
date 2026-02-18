@@ -10,10 +10,10 @@
     )
 
     header.with_description do
-      t(
+      link_translate(
         "webhooks.outgoing.explanation.text",
-        link: link_to(t(:"webhooks.outgoing.explanation.link"), admin_settings_aggregation_path, target: "_blank", rel: "noopener")
-      ).html_safe
+        links: { aggregation_path: admin_settings_aggregation_path }
+      )
     end
   end
 %>

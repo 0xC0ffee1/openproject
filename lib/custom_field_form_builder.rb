@@ -142,15 +142,14 @@ class CustomFieldFormBuilder < TabularFormBuilder
                 for: custom_field_field_id,
                 class: classes,
                 title: custom_field.name do
-      output = "".html_safe
-      output += custom_field.name
+      capture do
+        concat custom_field.name
 
-      # Render a help text icon
-      if options[:help_text]
-        output += content_tag("attribute-help-text", "", data: options[:help_text])
+        # Render a help text icon
+        if options[:help_text]
+          concat content_tag("attribute-help-text", "", data: options[:help_text])
+        end
       end
-
-      output
     end
   end
 end

@@ -45,7 +45,7 @@ module VersionsHelper
 
     html_options = html_options.merge(id: link_to_version_id(version))
 
-    link_name = options[:before_text].to_s.html_safe + format_version_name(version, options[:project] || @project)
+    link_name = format_version_name(version, options[:project] || @project)
     link_to_if version.visible?,
                link_name,
                { controller: "/versions", action: "show", id: version },
@@ -57,7 +57,7 @@ module VersionsHelper
       %i[start_date due_date]
         .filter { |attr| version.send(attr) }
         .map { |attr| "#{Version.human_attribute_name(attr)} #{format_date(version.send(attr))}" }
-    safe_join(formatted_dates, "<br>".html_safe)
+    safe_join(formatted_dates, tag(:br))
   end
 
   def link_to_version_id(version)

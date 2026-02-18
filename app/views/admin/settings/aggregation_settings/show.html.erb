@@ -47,14 +47,12 @@ See COPYRIGHT and LICENSE files for more details.
                              min: 0,
                              container_class: "-xslim" %>
     <span class="form--field-instructions">
-      <%= t(
+      <%= link_translate(
             :"admin.journal_aggregation.explanation.text",
-            webhook_link: link_to(
-              t(:"admin.journal_aggregation.explanation.link"),
-              admin_outgoing_webhooks_path,
-              target: "_blank"
-            )
-          ).html_safe %>
+            links: {
+              webhook_link: admin_outgoing_webhooks_path,
+            }
+          ) %>
       <br>
       <%= t(:text_hint_disable_with_0) %>
     </span>

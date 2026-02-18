@@ -42,12 +42,15 @@ See COPYRIGHT and LICENSE files for more details.
   <%= styled_form_tag(project_repository_path(@project), method: :delete, class: "danger-zone") do %>
     <section class="form--section">
       <h3 class="form--section-title">
-        <%= t("repositories.destroy.title", repository_type: "<em>#{h(@repository.repository_type)} - #{t(:project_module_repository)}</em>").html_safe %>
+        <%= t("repositories.destroy.title_html", repository_type: content_tag(:em, "#{@repository.repository_type} - #{t(:project_module_repository)}")) %>
       </h3>
       <p>
-        <%= t("repositories.destroy.subtitle", repository_type: "#{h(@repository.repository_type)} - #{t(:project_module_repository)}", project_name: h(@project.identifier)).html_safe %> <br>
+        <%= t("repositories.destroy.subtitle",
+              repository_type: "#{@repository.repository_type} - #{t(:project_module_repository)}",
+              project_name: @project.identifier) %>
+        <br/>
         <%= t("repositories.destroy.confirmation") %>
-        <br>
+        <br/>
         <%= t("repositories.destroy.managed_path_note", path: @repository.root_url) %>
       </p>
       <p class="danger-zone--warning">
@@ -55,7 +58,8 @@ See COPYRIGHT and LICENSE files for more details.
         <span><%= t("repositories.destroy.info") %></span>
       </p>
       <p>
-        <%= t("repositories.destroy.repository_verification", identifier: "<em class=\"danger-zone--expected-value\">#{h(@project.identifier)}</em>").html_safe %>
+        <%= t("repositories.destroy.repository_verification_html",
+              identifier: content_tag(:em, @project.identifier, class: "danger-zone--expected-value")) %>
       </p>
       <div class="danger-zone--verification">
         <input type="text">
@@ -66,13 +70,13 @@ See COPYRIGHT and LICENSE files for more details.
                               title: t(:button_delete),
                               disabled: true,
                               class: "-primary" do %>
-            <%= op_icon("button--icon icon-delete") %>
-            <span class="button--text"><%= t(:button_delete) %></span>
+          <%= op_icon("button--icon icon-delete") %>
+          <span class="button--text"><%= t(:button_delete) %></span>
         <% end %>
         <%= link_to project_settings_repository_path(@project),
                     title: t(:button_cancel),
                     class: "button -with-icon icon-cancel" do %>
-            <%= t(:button_cancel) %>
+          <%= t(:button_cancel) %>
         <% end %>
       </div>
     </section>
@@ -80,14 +84,20 @@ See COPYRIGHT and LICENSE files for more details.
 <% else %>
   <div class="op-toast -warning">
     <div class="op-toast--content">
-      <p><strong><%= t("repositories.destroy.title_not_managed", repository_type: "<em>#{h(@repository.repository_type)} - #{t(:project_module_repository)}</em>").html_safe %></strong><br></p>
+      <p>
+        <strong>
+          <%= t("repositories.destroy.title_not_managed",
+                repository_type: content_tag(:em, "#{@repository.repository_type} - #{t(:project_module_repository)}")) %>
+        </strong>
+        <br/>
+      </p>
       <p>
         <%= t(
-              "repositories.destroy.subtitle_not_managed",
-              repository_type: "#{h(@repository.repository_type)} - #{t(:project_module_repository)}",
-              project_name: h(@project.identifier),
-              url: h(@repository.url)
-            ).html_safe %> <br>
+              "repositories.destroy.subtitle_not_managed_html",
+              repository_type: "#{@repository.repository_type} - #{t(:project_module_repository)}",
+              project_name: @project.identifier,
+              url: @repository.url
+            ) %> <br>
       </p>
       <p>
         <span><%= t("repositories.destroy.info_not_managed") %></span>
@@ -106,7 +116,7 @@ See COPYRIGHT and LICENSE files for more details.
         <%= link_to project_settings_repository_path(@project),
                     title: t(:button_cancel),
                     class: "button -with-icon icon-cancel" do %>
-            <%= t(:button_cancel) %>
+          <%= t(:button_cancel) %>
         <% end %>
       </p>
     </div>

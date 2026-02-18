@@ -52,9 +52,9 @@
     <% end %>
     <p>
       <%= t(
-            "ldap_groups.synchronized_filters.destroy.verification",
-            name: "<em class=\"danger-zone--expected-value\">#{h(@filter.name)}</em>"
-          ).html_safe %>
+            "ldap_groups.synchronized_filters.destroy.verification_html",
+            name: content_tag(:em, @filter.name, class: "danger-zone--expected-value")
+          ) %>
     </p>
 
     <div class="danger-zone--verification">

@@ -91,7 +91,7 @@ RSpec.describe TabularFormBuilder do
       end
 
       context "with a prefix" do
-        let(:options) { { title: "Name", prefix: %{<span style="color:red">Prefix</span>} } }
+        let(:options) { { title: "Name", prefix: ApplicationController.helpers.content_tag(:span, "Prefix", style: "color:red") } }
 
         it "outputs elements" do
           expect(output).to be_html_eql(%{
@@ -121,7 +121,7 @@ RSpec.describe TabularFormBuilder do
       end
 
       context "with a suffix" do
-        let(:options) { { title: "Name", suffix: %{<span style="color:blue">Suffix</span>} } }
+        let(:options) { { title: "Name", suffix: ApplicationController.helpers.content_tag(:span, "Suffix", style: "color:blue") } }
 
         it "outputs elements" do
           expect(output).to be_html_eql(%{
@@ -147,8 +147,8 @@ RSpec.describe TabularFormBuilder do
         let(:options) do
           {
             title: "Name",
-            prefix: %{<span style="color:yellow">PREFIX</span>},
-            suffix: %{<span style="color:green">SUFFIX</span>}
+            prefix: ApplicationController.helpers.content_tag(:span, "PREFIX", style: "color:yellow"),
+            suffix: ApplicationController.helpers.content_tag(:span, "SUFFIX", style: "color:green")
           }
         end
 

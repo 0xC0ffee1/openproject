@@ -36,7 +36,7 @@ See COPYRIGHT and LICENSE files for more details.
       <%= t("saml.delete_title") %>
     </h3>
     <p>
-      <%= t("provider.delete_warning.provider", name: content_tag(:strong, @provider.display_name)).html_safe %>
+      <%= t("provider.delete_warning.provider_html", name: content_tag(:strong, @provider.display_name)) %>
     </p>
     <ul class="mb-3">
       <li><%= t("provider.delete_warning.delete_result_1") %></li>
@@ -50,7 +50,8 @@ See COPYRIGHT and LICENSE files for more details.
       <span><%= t("provider.delete_warning.irreversible_notice") %></span>
     </p>
     <p>
-      <%= t("provider.delete_warning.input_delete_confirmation", name: "<em class=\"danger-zone--expected-value\">#{h(@provider.display_name)}</em>").html_safe %>
+      <%= t("provider.delete_warning.input_delete_confirmation_html",
+            name: content_tag(:em, @provider.display_name, class: "danger-zone--expected-value")) %>
     </p>
     <div class="danger-zone--verification">
       <%= text_field_tag :delete_confirmation %>

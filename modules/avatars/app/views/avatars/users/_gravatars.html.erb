@@ -10,7 +10,7 @@
   <% if @user == current_user %>
     <p>
       <strong><%= t "note" %></strong>:
-      <%= t("avatars.text_change_gravatar_html", gravatar_url: link_to("gravatar.com", "https://www.gravatar.com")).html_safe %>
+      <%= t("avatars.text_change_gravatar_html", gravatar_url: link_to("gravatar.com", "https://www.gravatar.com")) %>
     </p>
   <% end %>
 </fieldset>

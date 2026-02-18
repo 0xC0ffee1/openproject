@@ -222,13 +222,13 @@ en:
     confirm_replace_oauth_application: This action will reset the current OAuth credentials. After confirming you will have to reenter the credentials at the storage provider and all remote users will have to authorize against OpenProject again. Are you sure you want to proceed?
     confirm_replace_oauth_client: This action will reset the current OAuth credentials. After confirming you will have to enter new credentials from the storage provider and all users will have to authorize against %{provider_type} again. Are you sure you want to proceed?
     delete_warning:
-      project_storage: Are you sure you want to remove %{file_storage} from this project?
       project_storage_delete_result_1: All links to corresponding files and folders will be removed
       project_storage_delete_result_2: The automatically-managed project folder and all files in it will be deleted
-      storage: Are you sure you want to delete %{file_storage} as an external file storage?
+      project_storage_html: Are you sure you want to remove %{file_storage} from this project?
       storage_delete_result_1: The storage will be removed from all projects currently using it
       storage_delete_result_2: All links to corresponding files and folders will be removed
       storage_delete_result_3: The automatically-managed project folder and all files in it will be deleted
+      storage_html: Are you sure you want to delete %{file_storage} as an external file storage?
     dependencies:
       nextcloud:
         group_folders_app: Team Folders
@@ -403,8 +403,7 @@ en:
       no_specific_folder: By default, each user will start at their own home folder when they upload a file.
       no_storage_set_up: There are no file storages set up yet.
       not_logged_into_storage: To select a project folder, please first login
-      oauth_application_details: The client secret value will not be accessible again after you close this window. Please copy these values into the %{oauth_application_details_link}.
-      oauth_application_details_link_text: Nextcloud OpenProject Integration settings
+      oauth_application_details: The client secret value will not be accessible again after you close this window. Please copy these values into the [Nextcloud OpenProject Integration settings](oauth_application_details_link).
       one_drive:
         application_link_text: Azure portal
         copy_redirect_uri: Copy redirect URI
@@ -512,7 +511,7 @@ en:
         members_connection_status: Members connection status
         new: Add a file storage to this project
       project_storage_members:
-        subtitle: Check the connection status for the storage %{storage_name_link} of all project members.
+        subtitle_html: Check the connection status for the storage %{storage_name_link} of all project members.
         title: Members connection status
       project_storages:
         delete: Remove file storage from project?

@@ -20,8 +20,8 @@
       <br>
       <%= t(
             "ldap_groups.synchronized_groups.destroy.verification",
-            name: "<em class=\"danger-zone--expected-value\">#{h(@group.dn)}</em>"
-          ).html_safe %>
+            name: content_tag(:em, @group.dn, class: "danger-zone--expected-value")
+          ) %>
     </p>
     <div class="danger-zone--verification">
       <input type="text">

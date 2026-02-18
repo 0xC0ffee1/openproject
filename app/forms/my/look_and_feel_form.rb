@@ -84,7 +84,7 @@ class My::LookAndFeelForm < ApplicationForm
   private
 
   def disable_keyboard_shortcuts_caption
-    attribute_name(:disable_keyboard_shortcuts_caption_html,
-                   href: OpenProject::Static::Links.url_for(:shortcuts)).html_safe # rubocop:disable Rails/OutputSafety
+    helpers.link_translate(:"user_preferences.disable_keyboard_shortcuts_caption",
+                           links: { docs_url: %i[shortcuts] })
   end
 end

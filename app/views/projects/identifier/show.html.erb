@@ -50,10 +50,10 @@ See COPYRIGHT and LICENSE files for more details.
 
     <p class="danger-zone--warning">
       <span class="icon icon-error"></span>
-      <span><%= t("project.identifier.warning_one").html_safe %></span>
+      <span><%= t("project.identifier.warning_one") %></span>
       <br>
       <span class="icon icon-error"></span>
-      <span><%= t("project.identifier.warning_two").html_safe %></span>
+      <span><%= t("project.identifier.warning_two") %></span>
     </p>
 
     <%= styled_label_tag "identifier", Project.human_attribute_name(:identifier), class: "-required" %>
@@ -77,7 +77,7 @@ See COPYRIGHT and LICENSE files for more details.
             :text_length_between, min: 1,
                                   max: Project::IDENTIFIER_MAX_LENGTH
           ) %>
-      <%= t(:text_project_identifier_info).html_safe %>
+      <%= t(:text_project_identifier_info) %>
     </div>
 
   </section>

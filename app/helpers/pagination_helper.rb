@@ -121,7 +121,7 @@ module PaginationHelper
 
   def pagination_options_section(paginator, params:, allowed_params:)
     per_page_options = Setting.per_page_options_array
-    return "".html_safe if per_page_options.empty?
+    return "" if per_page_options.empty?
 
     allowed_params ||= %w[filters sortBy]
     content_tag(:div, class: "op-pagination--options") do

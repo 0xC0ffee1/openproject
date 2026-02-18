@@ -51,9 +51,9 @@ en:
 
   provider:
     delete_warning:
-      input_delete_confirmation: Enter the provider name %{name} to confirm deletion.
+      input_delete_confirmation_html: Enter the provider name %{name} to confirm deletion.
       irreversible_notice: Deleting an SSO provider is an irreversible action.
-      provider: 'Are you sure you want to delete the SSO provider %{name}? To confirm this action please enter the name of the provider in the field below, this will:'
+      provider_html: 'Are you sure you want to delete the SSO provider %{name}? To confirm this action please enter the name of the provider in the field below, this will:'
       delete_result_1: Remove the provider from the list of available providers.
       delete_result_user_count:
         zero: No users are currently using this provider. No further action is required.

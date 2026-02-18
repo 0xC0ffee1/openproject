@@ -28,7 +28,11 @@ See COPYRIGHT and LICENSE files for more details.
 ++#%>
 <%=
   render(Primer::OpenProject::PageHeader.new) do |header|
-    header.with_title { "#{avatar @placeholder_user} #{h(@placeholder_user.name)}".html_safe }
+    header.with_title do
+      concat avatar(@placeholder_user)
+      concat @placeholder_user.name
+    end
+
     header.with_breadcrumbs(breadcrumb_items)
 
     if @current_user.allowed_globally?(:manage_placeholder_user)

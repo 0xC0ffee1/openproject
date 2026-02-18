@@ -207,7 +207,7 @@ class TabularFormBuilder < ActionView::Helpers::FormBuilder
 
     if prefix
       ret.prepend content_tag(:span,
-                              prefix.html_safe,
+                              prefix,
                               class: "form--field-affix",
                               id: options[:prefix_id],
                               "aria-hidden": true)
@@ -215,7 +215,7 @@ class TabularFormBuilder < ActionView::Helpers::FormBuilder
 
     if suffix
       ret.concat content_tag(:span,
-                             suffix.html_safe,
+                             suffix,
                              class: "form--field-affix",
                              id: options[:suffix_id],
                              "aria-hidden": true)

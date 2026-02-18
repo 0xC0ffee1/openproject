@@ -69,10 +69,13 @@ module PasswordHelper
   def render_password_complexity_hint
     rules = password_rules_description
 
-    s = OpenProject::Passwords::Evaluator.min_length_description
-    s += "<br> #{rules}" if rules.present?
-
-    s.html_safe
+    capture do
+      concat OpenProject::Passwords::Evaluator.min_length_description
+      if rules.present?
+        concat tag(:br)
+        concat rules
+      end
+    end
   end
 
   private

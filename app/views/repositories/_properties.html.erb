@@ -27,16 +27,13 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<%# LOCALS
-  fail ArgumentError, "missing instructions" unless defined? instructions %>
-
-<% html_title t(:label_login) %>
-<%= call_hook :view_account_login_top %>
-
-<div id="login-form" class="form -bordered">
-  <h1><%= I18n.t(:label_login) %></h1>
-  <hr class="form--separator">
-  <p><%= link_translate "instructions_#{instructions}",
-                        links: { signin_url: signin_path } %></p>
-</div>
-<%= call_hook :view_account_login_bottom %>
+<% if @properties.present? %>
+  <ul class="properties">
+    <% @properties.keys.sort.each do |property| %>
+      <li>
+        <b><%= property %></b>:
+        <span><%= @properties[property] %></span>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

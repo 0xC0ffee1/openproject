@@ -90,9 +90,9 @@ class Users::HoverCardComponent < ApplicationComponent
     remaining_count_link = link_to(t("users.groups.more", count: remaining_count), user_path(@user))
 
     if remaining_count > 0
-      t("users.groups.summary_with_more", names: summary_links, count_link: remaining_count_link).html_safe
+      t("users.groups.summary_with_more_html", names: summary_links, count_link: remaining_count_link)
     else
-      t("users.groups.summary", names: summary_links).html_safe
+      t("users.groups.summary_html", names: summary_links)
     end
   end
 end

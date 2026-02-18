@@ -39,7 +39,7 @@ module WorkPackagesHelper
   #   link_to_work_package(package, link_subject: true)        # => Defect #6: This is the subject (everything within the link)
   #   link_to_work_package(package, display_project: true)     # => Foo - Defect #6: This is the subject
   def link_to_work_package(work_package, display_project: false, link_subject: false) # rubocop:disable Metrics/AbcSize
-    output = "".html_safe
+    output = ActiveSupport::SafeBuffer.new
     output << "#{work_package.project} - " if display_project && work_package.project_id
 
     link = link_to(work_package_path(work_package),
@@ -99,22 +99,6 @@ module WorkPackagesHelper
         boxes
       end) + I18n.t("notifications.send_notifications")
     end
-  end
-
-  def work_package_associations_to_address(associated)
-    ret = "".html_safe
-
-    ret += content_tag(:p, I18n.t(:text_destroy_with_associated), class: "bold")
-
-    ret += content_tag(:ul) do
-      associated.inject("".html_safe) do |list, associated_class|
-        list += content_tag(:li, associated_class.model_name.human, class: "decorated")
-
-        list
-      end
-    end
-
-    ret
   end
 
   def back_url_is_wp_show?

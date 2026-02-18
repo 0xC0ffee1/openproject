@@ -31,8 +31,8 @@ See COPYRIGHT and LICENSE files for more details.
   <%=
     I18n.t(
       i18n_key,
-      user: user_html,
-      datetime: datetime_html
+      user: h(user_html),
+      datetime: h(datetime_html)
     ).html_safe # OG: html_safe usage has been double-checked and would otherwise require a lot of i18n key change
   %>
 </div>

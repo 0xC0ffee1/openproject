@@ -89,11 +89,12 @@ module UsersHelper
 
   # Create buttons to lock/unlock a user and reset failed logins
   def build_change_user_status_action(user)
-    result = "".html_safe
-    iterate_user_statusses(user) do |title, name|
-      result << ((yield title, name) + " ") # rubocop:disable Style/StringConcatenation
+    capture do
+      iterate_user_statusses(user) do |title, name|
+        concat yield(title, name)
+        concat " "
+      end
     end
-    result
   end
 
   def iterate_user_statusses(user)

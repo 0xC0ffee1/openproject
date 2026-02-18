@@ -47,16 +47,6 @@ module RepositoriesHelper
     text&.gsub(%r{^(.{#{length}}[^\n]*)\n.+$}m, '\\1...')
   end
 
-  def render_properties(properties)
-    unless properties.nil? || properties.empty?
-      content = +""
-      properties.keys.sort.each do |property|
-        content << content_tag("li", raw("<b>#{h property}</b>: <span>#{h properties[property]}</span>"))
-      end
-      content_tag("ul", content.html_safe, class: "properties")
-    end
-  end
-
   def render_changeset_changes
     changes = @changeset.file_changes.limit(1000).order(Arel.sql("path")).filter_map do |change|
       case change.action
@@ -116,51 +106,50 @@ module RepositoriesHelper
   def render_changes_tree(tree)
     return "" if tree.nil?
 
-    output = +"<ul>"
-    tree.keys.sort.each do |file|
-      style = +"change"
+    items = tree.keys.sort.filter_map do |file|
       text = File.basename(file)
-      if s = tree[file][:s]
-        style += " folder"
+
+      if (s = tree[file][:s])
         path_param = without_leading_slash(to_path_param(@repository.relative_path(file)))
-        text = link_to(h(text),
+        link = link_to(text,
                        show_revisions_path_project_repository_path(project_id: @project,
                                                                    repo_path: path_param,
                                                                    rev: @changeset.identifier),
                        title: I18n.t(:label_folder))
 
-        output += "<li class='#{style} icon icon-folder-#{calculate_folder_action(s)}'>#{text}</li>"
-        output += render_changes_tree(s)
-      elsif c = tree[file][:c]
-        style += " change-#{c.action}"
+        content_tag(:li, safe_join([link, render_changes_tree(s)]),
+                    class: "change folder icon icon-folder-#{calculate_folder_action(s)}")
+      elsif (c = tree[file][:c])
         path_param = without_leading_slash(to_path_param(@repository.relative_path(c.path)))
+        parts = []
 
-        unless c.action == "D"
-          title_text = changes_tree_change_title c.action
-
-          text = link_to(h(text),
-                         entry_revision_project_repository_path(project_id: @project,
-                                                                repo_path: path_param,
-                                                                rev: @changeset.identifier),
-                         title: title_text)
+        if c.action == "D"
+          parts << text
+        else
+          parts << link_to(text,
+                           entry_revision_project_repository_path(project_id: @project,
+                                                                  repo_path: path_param,
+                                                                  rev: @changeset.identifier),
+                           title: changes_tree_change_title(c.action))
         end
 
-        text << raw(" - #{h(c.revision)}") if c.revision.present?
+        parts << safe_join([" - ", c.revision]) if c.revision.present?
 
         if c.action == "M"
-          text << raw(" (" + link_to(I18n.t(:label_diff),
-                                     diff_revision_project_repository_path(project_id: @project,
-                                                                           repo_path: path_param,
-                                                                           rev: @changeset.identifier)) + ") ")
+          diff_link = link_to(I18n.t(:label_diff),
+                              diff_revision_project_repository_path(project_id: @project,
+                                                                    repo_path: path_param,
+                                                                    rev: @changeset.identifier))
+          parts << safe_join([" (", diff_link, ") "])
         end
 
-        text << raw(" " + content_tag("span", h(c.from_path), class: "copied-from")) if c.from_path.present?
+        parts << safe_join([" ", content_tag(:span, c.from_path, class: "copied-from")]) if c.from_path.present?
 
-        output += changes_tree_li_element(c.action, text, style)
+        changes_tree_li_element(c.action, safe_join(parts), "change change-#{c.action}")
       end
     end
-    output += "</ul>"
-    output.html_safe
+
+    content_tag(:ul, safe_join(items))
   end
 
   def to_utf8_for_repositories(str)
@@ -296,19 +285,13 @@ module RepositoriesHelper
 
   def changes_tree_li_element(action, text, style)
     icon_name = case action
-                when "A"
-                  "icon-add"
-                when "D"
-                  "icon-delete"
-                when "C"
-                  "icon-copy"
-                when "R"
-                  "icon-rename"
-                else
-                  "icon-arrow-left-right"
+                when "A" then "icon-add"
+                when "D" then "icon-delete"
+                when "C" then "icon-copy"
+                when "R" then "icon-rename"
+                else          "icon-arrow-left-right"
                 end
 
-    "<li class='#{style} icon #{icon_name}'
-         title='#{changes_tree_change_title(action)}'>#{text}</li>"
+    content_tag(:li, text, class: "#{style} icon #{icon_name}", title: changes_tree_change_title(action))
   end
 end

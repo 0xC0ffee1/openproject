@@ -3,8 +3,8 @@
 <% end %>
 
 <%= render(Primer::Beta::Text.new(tag: :p)) do %>
-  <%= I18n.t(
+  <%= helpers.link_translate(
           :setting_apiv3_cors_origins_text_html,
-          origin_link: ::OpenProject::Static::Links.url_for(:origin_mdn_documentation)
-        ).html_safe %>
+          links: { docs_url: %i[origin_mdn_documentation] }
+        ) %>
 <% end %>
