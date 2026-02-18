@@ -112,15 +112,16 @@ module Redmine
     #     link_translate(:logged_out, links: { login: login_url })
     #
     # @param i18n_key [String] The I18n key to translate.
+    # @param i18n_args [Hash] Arguments passed to I18n.t() call
     # @param links [Hash] Link names mapped to URLs.
     # @param external [Boolean] Whether the links should be opened as external links, i.e. in a new tab (default: true)
     # @param underline [Boolean] Whether to underline links inserted into the text (default: true)
-    def link_translate(i18n_key, links: {}, external: true, underline: true)
+    def link_translate(i18n_key, i18n_args: {}, links: {}, external: true, underline: true, **)
       output = ActiveSupport::SafeBuffer.new
       output << ApplicationController.helpers.t(i18n_key.to_s)
 
       output.html_safe_gsub(link_regex) do
-        create_link_content($3, $2, external:, links:, underline:)
+        create_link_content($3, $2, external:, links:, underline:, **)
       end
     end
 
@@ -269,8 +270,8 @@ module Redmine
 
     private
 
-    def create_link_content(key, text, external:, links:, underline:)
-      link_reference = links[key.to_sym]
+    def create_link_content(key, text, external:, links:, underline:, **link_arguments)
+      link_reference = links.fetch(key.to_sym)
       href =
         case link_reference
         when Array
@@ -282,10 +283,11 @@ module Redmine
 
       render(
         Primer::Beta::Link.new(
+          **link_arguments,
           href:,
           target:,
           underline:,
-          data: { allow_external_link: true }
+          data: { allow_external_link: true },
         )
       ) do |l|
         l.with_trailing_visual_icon(icon: :"link-external") if external

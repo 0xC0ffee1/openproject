@@ -5,8 +5,7 @@ en:
     description: "Listing and status of background jobs."
   job_status_dialog:
     download_starts: 'The download should start automatically.'
-    link_to_download: 'Or, %{link} to download.'
-    click_here: 'click here'
+    link_to_download: 'Or, [click here)(download_link) to download.'
     title: 'Background job status'
     redirect: 'You are being redirected.'
     redirect_link: 'Please click here to continue.'

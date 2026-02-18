@@ -391,7 +391,7 @@ en:
       host: Please add the host address of your storage including the https://. It should not be longer than 255 characters.
       managed_project_folders_application_password_caption: 'Enable automatic managed folders by copying this value from: %{provider_type_link}.'
       name: Give your storage a name so that users can differentiate between multiple storages.
-      new_storage: Read our documentation on <a target='_blank' href='%{provider_link}'>setting up a %{provider_name} file storage</a> integration for more information.
+      new_storage: Read our documentation on [setting up a %{provider_name} file storage](docs_url) integration for more information.
       nextcloud:
         application_link_text: application “Integration OpenProject”
         integration: Nextcloud Administration / OpenProject
