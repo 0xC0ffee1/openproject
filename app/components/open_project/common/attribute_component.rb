@@ -78,24 +78,20 @@ module OpenProject
 
       private
 
-      def first_paragraph_content
-        return unless first_paragraph_ast
-
-        first_paragraph_ast
-          .inner_html
-          .html_safe # rubocop:disable Rails/OutputSafety
-      end
-
+      # rubocop:disable Rails/OutputSafety
+      # OG: html_safe double-checked and expected here,
+      # output is coming from format_text which we output elsewhere, too.
       def first_paragraph
         @first_paragraph ||= if body_children.any?
                                body_children
                                  .first
                                  .inner_html
-                                 .html_safe # rubocop:disable Rails/OutputSafety
+                                 .html_safe
                              else
                                ""
                              end
       end
+      # rubocop:enable Rails/OutputSafety
 
       def first_paragraph_ast
         @first_paragraph_ast ||= text_ast
