@@ -124,30 +124,6 @@ module ApplicationHelper
     Project.project_tree(projects, &)
   end
 
-  def project_nested_ul(projects, &)
-    s = +""
-    if projects.any?
-      ancestors = []
-      Project.project_tree(projects) do |project, _level|
-        if ancestors.empty? || project.is_descendant_of?(ancestors.last)
-          s << "<ul>\n"
-        else
-          ancestors.pop
-          s << "</li>"
-          while ancestors.any? && !project.is_descendant_of?(ancestors.last)
-            ancestors.pop
-            s << "</ul></li>\n"
-          end
-        end
-        s << "<li>"
-        s << yield(project).to_s
-        ancestors << project
-      end
-      s << ("</li></ul>\n" * ancestors.size)
-    end
-    s.html_safe
-  end
-
   def principals_check_box_tags(name, principals)
     labeled_check_box_tags(name, principals,
                            title: :user_status_i18n,
