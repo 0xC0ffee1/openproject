@@ -118,7 +118,7 @@ module Redmine
     # @param underline [Boolean] Whether to underline links inserted into the text (default: true)
     def link_translate(i18n_key, i18n_args: {}, links: {}, external: true, underline: true, **)
       output = ActiveSupport::SafeBuffer.new
-      output << ApplicationController.helpers.t(i18n_key.to_s)
+      output << ApplicationController.helpers.t(i18n_key.to_s, **i18n_args)
 
       output.html_safe_gsub(link_regex) do
         create_link_content($3, $2, external:, links:, underline:, **)
@@ -281,18 +281,21 @@ module Redmine
         end
       target = external ? "_blank" : nil
 
-      render(
-        Primer::Beta::Link.new(
-          **link_arguments,
-          href:,
-          target:,
-          underline:,
-          data: { allow_external_link: true },
-        )
-      ) do |l|
-        l.with_trailing_visual_icon(icon: :"link-external") if external
-        text
-      end
+      # Make sure we use AC renderer here to not affect the performed? state
+      # when rendering this in e.g., a before action.
+      # Note: ActionController::Renderer#render does not pass blocks through to
+      # ViewComponent, so slots and content must be set before rendering.
+      component = Primer::Beta::Link.new(
+        **link_arguments,
+        href:,
+        target:,
+        underline:,
+        data: { allow_external_link: true },
+      )
+      component.with_trailing_visual_icon(icon: :"link-external") if external
+      component.with_content(text)
+
+      ApplicationController.renderer.render(component, layout: false)
     end
   end
 end
