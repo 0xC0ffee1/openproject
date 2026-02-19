@@ -183,3 +183,8 @@ ignore_unused:
 #
 # <%# I18n::Tasks.add_scanner 'I18n::Tasks::Scanners::PatternMapper',
 #       patterns: [['\bSpree\.t[( ]\s*%{key}', 'spree.%{key}']] %>
+
+## Detect link_translate("some.key", ...) calls, which are not picked up by the default scanner
+## because they use a custom helper rather than t() / I18n.t().
+<% I18n::Tasks.add_scanner 'I18n::Tasks::Scanners::PatternMapper',
+     patterns: [['\blink_translate\s*\(\s*%{key}', '%{key}']] %>
