@@ -53,6 +53,10 @@ RSpec.describe API::V3::Sprints::SprintRepresenter, "rendering" do
 
   it { is_expected.to include_json("Sprint".to_json).at_path("_type") }
 
+  it "fulfills the documented schema" do
+    expect(generated).to match_json_schema.from_docs("sprint_model")
+  end
+
   describe "links" do
     it { is_expected.to have_json_type(Object).at_path("_links") }
 
