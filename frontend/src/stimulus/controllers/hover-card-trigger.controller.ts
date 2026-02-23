@@ -276,7 +276,12 @@ export default class HoverCardTriggerController extends ApplicationController {
     const id = el.getAttribute('data-hover-card-popover-template-id');
     if (!id) { return null; }
 
-    return document.getElementById(id) as HTMLTemplateElement;
+    const element = document.getElementById(id);
+    if (!element || !(element instanceof HTMLTemplateElement)) {
+      return null;
+    }
+
+    return element;
   }
 
   private async reposition(element:HTMLElement, target:HTMLElement) {
