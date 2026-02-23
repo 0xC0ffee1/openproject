@@ -114,8 +114,8 @@ Note that the user example is simplified. For actual use in the application, it 
 ### Static hover cards via existing DOM elements
 
 If the content of a hover card is already present in the DOM, it is possible to define hover cards contents by
-pointing to the ID of an existing element. To do so, you must provide the attribute `data-hover-card-popover-id` on the
-trigger element.
+pointing to the ID of an existing element. To do so, you must provide the attribute `data-hover-card-popover-template-id`
+on the trigger element.
 
 **Trigger**:
 ```html
@@ -124,18 +124,17 @@ trigger element.
 
     <!-- A hover card will be shown when hovering over this link: -->
     <a href="work_packages/14/activity"
-       data-hover-card-popover-id="work-package-hover-card-14"
+       data-hover-card-popover-template-id="work-package-hover-card-14"
        data-hover-card-trigger-target="trigger">
       #14
     </a>
   </body>
 ```
-The hover card content can be placed at a convenient place in the DOM. It is recommended to use a
-[template element](https://www.w3schools.com/TagS/tag_template.asp) for that purpose. Whichever element you use: it is
-required to assign the ID that was inserted in the trigger's `data-hover-card-popover-id` attribute.
 
-When a template is used, the hover card will be hidden automatically. If another type of element is used, you are
-responsible for ensuring its invisibility on your own.
+The hover card content can be placed at a convenient place in the DOM. You must use a
+[template element](https://www.w3schools.com/TagS/tag_template.asp) for that purpose. Conveniently, the content will
+be hidden automatically until the card is displayed.
+It is required to assign the ID that was inserted in the trigger's `data-hover-card-popover-template-id` attribute.
 
 When hovering over the trigger, the hover card will be rendered floating next to it.
 

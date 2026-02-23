@@ -273,7 +273,7 @@ export default class HoverCardTriggerController extends ApplicationController {
   }
 
   private getPopoverTemplateFromId(el:HTMLElement):HTMLTemplateElement|null {
-    const id = el.getAttribute('data-hover-card-popover-id');
+    const id = el.getAttribute('data-hover-card-popover-template-id');
     if (!id) { return null; }
 
     return document.getElementById(id) as HTMLTemplateElement;
