@@ -27,6 +27,7 @@
         </ul>
       </div>
       <wp-single-view [workPackage]="newWorkPackage"
+                      [routedFromAngular]="routedFromAngular"
                       [showProject]="copying" />
       <wp-edit-actions-bar (onCancel)="cancelAndBack()" />
     </edit-form>
