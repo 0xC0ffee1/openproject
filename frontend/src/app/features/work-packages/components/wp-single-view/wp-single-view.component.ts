@@ -104,6 +104,8 @@ export class WorkPackageSingleViewComponent extends UntilDestroyedMixin implemen
   /** Should we show the project field */
   @Input() public showProject = false;
 
+  @Input() public routedFromAngular = true;
+
   // Grouped fields returned from API
   public groupedFields:GroupDescriptor[] = [];
 
