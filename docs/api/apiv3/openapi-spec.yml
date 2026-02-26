@@ -436,6 +436,8 @@ paths:
     "$ref": "./paths/roles.yml"
   "/api/v3/roles/{id}":
     "$ref": "./paths/role.yml"
+  "/api/v3/sprints":
+    "$ref": "./paths/sprints.yml"
   "/api/v3/sprints/{id}":
     "$ref": "./paths/sprint.yml"
   "/api/v3/statuses":
@@ -649,6 +651,8 @@ components:
       $ref: "./components/examples/relation_update_request.yml"
     SprintResponse:
       $ref: "./components/examples/sprint.yml"
+    SprintCollectionResponse:
+      $ref: "./components/examples/sprint_collection.yml"
     StatusCollection:
       $ref: "./components/examples/status_collection.yml"
     StatusResponse:
@@ -967,6 +971,8 @@ components:
       "$ref": "./components/schemas/schema_for_global_queries_model.yml"
     Schema_For_Workspace_QueriesModel:
       "$ref": "./components/schemas/schema_for_workspace_queries_model.yml"
+    SprintCollectionModel:
+      "$ref": "./components/schemas/sprint_collection_model.yml"
     SprintModel:
       "$ref": "./components/schemas/sprint_model.yml"
     Star_QueryModel:
