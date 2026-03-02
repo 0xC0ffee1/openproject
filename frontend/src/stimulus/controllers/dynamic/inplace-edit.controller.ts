@@ -39,7 +39,15 @@ export default class extends Controller {
 
   declare urlValue:string;
 
-  async request() {
+  async request(event?:MouseEvent) {
+    if (event instanceof MouseEvent) {
+      document.body.dataset.inplaceEditClickX = String(event.clientX);
+      document.body.dataset.inplaceEditClickY = String(event.clientY);
+    } else {
+      delete document.body.dataset.inplaceEditClickX;
+      delete document.body.dataset.inplaceEditClickY;
+    }
+
     const response = await fetch(this.urlValue, {
       method: 'GET',
       headers: { Accept: 'text/vnd.turbo-stream.html' },

@@ -40,12 +40,44 @@ export default class extends Controller {
 
   connect():void {
     if (this.autofocusValue) {
-      setTimeout(() => { this.focusInput(); }, 100);
+      const x = parseInt(document.body.dataset.inplaceEditClickX ?? '', 10);
+      const y = parseInt(document.body.dataset.inplaceEditClickY ?? '', 10);
+      delete document.body.dataset.inplaceEditClickX;
+      delete document.body.dataset.inplaceEditClickY;
+
+      const coords = !isNaN(x) && !isNaN(y) ? { x, y } : null;
+      setTimeout(() => { this.focusInput(coords); }, 100);
     }
   }
 
-  focusInput():void {
+  focusInput(coords?:{ x:number; y:number }|null):void {
     this.element.scrollIntoView({ block: 'center' });
-    retrieveCkEditorInstance(this.editorTarget)?.editing.view.focus();
+    const editor = retrieveCkEditorInstance(this.editorTarget);
+    if (!editor) return;
+
+    if (coords) {
+      try {
+        // The actual editor is slightly offset, so we need to adjust the coordinates
+        const domRange = document.caretRangeFromPoint?.(coords.x + 10, coords.y + 50) ?? null;
+        const editableEl = this.editorTarget.querySelector('.ck-editor__editable_inline');
+
+        if (domRange && editableEl?.contains(domRange.startContainer)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment
+          const ck = editor as any;
+          const viewRange = ck.editing.view.domConverter.domRangeToView(domRange);
+          if (viewRange) {
+            const modelRange = ck.editing.mapper.toModelRange(viewRange);
+            ck.model.change((writer:any) => { writer.setSelection(modelRange); });
+            editor.editing.view.focus();
+            return;
+          }
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        // Fall through to default focus
+      }
+    }
+
+    editor.editing.view.focus();
   }
 }
