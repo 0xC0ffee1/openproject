@@ -104,6 +104,7 @@ See COPYRIGHT and LICENSE files for more details.
   <div class="form--field -required">
     <% if @cost_entry.cost_type.nil? %>
       <%= f.text_field :units,
+                       pattern: "-?[0-9]+([.,][0-9]+)*",
                        value: unitless_currency_number(@cost_entry.units),
                        size: 6,
                        required: true,
@@ -111,6 +112,7 @@ See COPYRIGHT and LICENSE files for more details.
     <% else %>
       <% suffix = @cost_entry.units == 1 ? @cost_entry.cost_type.unit : @cost_entry.cost_type.unit_plural %>
       <%= f.text_field :units,
+                       pattern: "-?[0-9]+([.,][0-9]+)*",
                        size: 6,
                        value: unitless_currency_number(@cost_entry.units),
                        required: true,
