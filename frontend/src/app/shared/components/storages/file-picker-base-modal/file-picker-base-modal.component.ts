@@ -120,9 +120,11 @@ export abstract class FilePickerBaseModalComponent extends OpModalComponent impl
           this.breadcrumbs = this.makeBreadcrumbs(storageFiles.ancestors, storageFiles.parent);
           this.storageFiles$.next(storageFiles.files);
           this.loading$.next('success');
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.loading$.next('error');
+          this.cdRef.detectChanges();
           throw error;
         },
       });
@@ -151,6 +153,7 @@ export abstract class FilePickerBaseModalComponent extends OpModalComponent impl
   protected changeLevel(ancestor:IStorageFile):void {
     this.cancelCurrentLoading();
     this.loading$.next('loading');
+    this.cdRef.detectChanges();
 
     this.loadingSubscription = this.storageFilesResourceService
       .files(makeFilesCollectionLink(this.storage._links.self, ancestor.location))
@@ -160,9 +163,11 @@ export abstract class FilePickerBaseModalComponent extends OpModalComponent impl
           this.breadcrumbs = this.makeBreadcrumbs(storageFiles.ancestors, storageFiles.parent);
           this.storageFiles$.next(storageFiles.files);
           this.loading$.next('success');
+          this.cdRef.detectChanges();
         },
         error: (error) => {
           this.loading$.next('error');
+          this.cdRef.detectChanges();
           throw error;
         },
       });
