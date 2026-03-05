@@ -34,7 +34,7 @@ import { EditFieldHandler } from 'core-app/shared/components/fields/edit/editing
 import { setPosition } from 'core-app/shared/helpers/set-click-position/set-click-position';
 import { debugLog } from 'core-app/shared/helpers/debug_output';
 import { IFieldSchema } from 'core-app/shared/components/fields/field.base';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { PathHelperService } from 'core-app/core/path-helper/path-helper.service';
 import { EditForm } from 'core-app/shared/components/fields/edit/edit-form/edit-form';
 import { HalResource } from 'core-app/features/hal/resources/hal-resource';
@@ -53,6 +53,14 @@ export class HalResourceEditFieldHandler extends EditFieldHandler {
 
   // Current errors of the field
   public errors:string[];
+
+  // Fires when errors are updated, so portals can trigger their own CD
+  private readonly _errorsChanged$ = new Subject<void>();
+  public readonly errorsChanged$:Observable<void> = this._errorsChanged$.asObservable();
+
+  // Fires when handler-derived state such as inFlight changes.
+  private readonly _stateChanged$ = new Subject<void>();
+  public readonly stateChanged$:Observable<void> = this._stateChanged$.asObservable();
 
   constructor(
     public injector:Injector,
@@ -109,6 +117,11 @@ export class HalResourceEditFieldHandler extends EditFieldHandler {
   public setErrors(newErrors:string[]) {
     this.errors = newErrors;
     this.element.classList.toggle('-error', this.isErrorenous);
+    this._errorsChanged$.next();
+  }
+
+  public notifyStateChanged() {
+    this._stateChanged$.next();
   }
 
   /**

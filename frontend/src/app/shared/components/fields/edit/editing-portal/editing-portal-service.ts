@@ -67,7 +67,10 @@ export class EditingPortalService {
         take(1),
       )
       .toPromise()
-      .then(() => fieldHandler);
+      .then(() => {
+        ref.changeDetectorRef.detectChanges(); // ensure error classes applied in zoneless mode
+        return fieldHandler;
+      });
   }
 
   /**

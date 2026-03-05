@@ -29,6 +29,7 @@
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -86,6 +87,7 @@ export class EditFormComponent extends EditForm<HalResource> implements OnInit, 
   constructor(public readonly injector:Injector,
     protected readonly elementRef:ElementRef,
     private appRef:ApplicationRef,
+    private readonly cdRef:ChangeDetectorRef,
     protected readonly $transitions:TransitionService,
     protected readonly ConfigurationService:ConfigurationService,
     protected readonly editingPortalService:EditingPortalService,
@@ -208,6 +210,7 @@ export class EditFormComponent extends EditForm<HalResource> implements OnInit, 
   }
 
   protected focusOnFirstError():void {
+    this.cdRef.detectChanges();
     // Focus the first field that is erroneous
     this.elementRef.nativeElement
       .querySelector(`.${activeFieldContainerClassName}.-error .${activeFieldClassName}`)

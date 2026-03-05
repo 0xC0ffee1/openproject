@@ -166,7 +166,7 @@ class EditField
   end
 
   def expect_enabled!
-    expect(@context).to have_no_css "#{@selector} #{input_selector}[disabled]"
+    expect(@context).to have_no_css "#{@selector} #{input_selector}[disabled]", wait: 10
   end
 
   def expect_invalid

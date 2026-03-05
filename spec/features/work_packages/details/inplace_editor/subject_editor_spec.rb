@@ -54,11 +54,10 @@ RSpec.describe "subject inplace editor", :js, :selenium do
       field.set_value too_long
       field.submit_by_enter
 
+      notification.expect_error("Subject is too long (maximum is 255 characters)")
       field.expect_error
       field.expect_active!
       expect(field.input_element.value).to eq(too_long)
-
-      notification.expect_error("Subject is too long (maximum is 255 characters)")
     end
 
     context "when save" do
