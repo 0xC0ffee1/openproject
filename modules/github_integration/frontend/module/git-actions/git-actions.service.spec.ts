@@ -28,7 +28,6 @@
 
 import { GitActionsService } from './git-actions.service';
 import { WorkPackageResource } from "core-app/features/hal/resources/work-package-resource";
-import { TestBed, waitForAsync } from '@angular/core/testing';
 import { PathHelperService } from "core-app/core/path-helper/path-helper.service";
 
 describe('GitActionsService', function() {
@@ -47,17 +46,6 @@ describe('GitActionsService', function() {
     const workPackage = { ...defaults, ...overrides };
     return(workPackage as WorkPackageResource);
   };
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        GitActionsService
-      ]
-    }).compileComponents()
-      .then(() => {
-        service = TestBed.inject(GitActionsService);
-      });
-  }));
 
   beforeEach(() => {
     service = new GitActionsService();

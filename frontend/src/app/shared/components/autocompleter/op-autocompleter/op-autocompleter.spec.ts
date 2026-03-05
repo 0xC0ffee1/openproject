@@ -52,13 +52,13 @@ describe('autocompleter', () => {
     },
   ];
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-    declarations: [OpAutocompleterComponent],
-    schemas: [NO_ERRORS_SCHEMA],
-    imports: [NgSelectModule],
-    providers: [States, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [OpAutocompleterComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+      imports: [NgSelectModule],
+      providers: [States, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OpAutocompleterComponent);
     getOptionsFnSpy = jasmine.createSpy('getOptionsFn').and.callFake((searchTerm:string) => {
@@ -152,44 +152,44 @@ describe('autocompleter', () => {
       fixture.componentInstance.debounceTimeMs = 50;
     });
 
-    it('should load items with debounce', () => {
-      jasmine.clock().install();
-      try {
-        jasmine.clock().tick(0);
-        fixture.detectChanges();
-        fixture.componentInstance.ngAfterViewInit();
-        jasmine.clock().tick(1000);
-        fixture.detectChanges();
-        const select = fixture.componentInstance.ngSelectInstance;
+    it('should load items with debounce', async () => {
+      fixture.detectChanges();
+      fixture.componentInstance.ngAfterViewInit();
 
-        expect(select.isOpen).toBeFalse();
-        select.open();
-        select.focus();
+      // Wait for ngAfterViewInit's internal setTimeout(25ms) and debounce to fire.
+      await new Promise(resolve => setTimeout(resolve, 100));
+      fixture.detectChanges();
+      const select = fixture.componentInstance.ngSelectInstance;
 
-        expect(select.isOpen).toBeTrue();
+      expect(select.isOpen).toBeFalse();
+      select.open();
+      select.focus();
 
-        expect(select.itemsList.items.length).toEqual(0);
+      expect(select.isOpen).toBeTrue();
 
-        const inputDebugElement = fixture.debugElement.query(By.css('input[role=combobox]'));
-        const inputElement = inputDebugElement.nativeElement as HTMLInputElement;
+      expect(select.itemsList.items.length).toEqual(0);
 
-        fixture.detectChanges();
+      const inputDebugElement = fixture.debugElement.query(By.css('input[role=combobox]'));
+      const inputElement = inputDebugElement.nativeElement as HTMLInputElement;
 
-        expect(getOptionsFnSpy).toHaveBeenCalledWith('');
-        getOptionsFnSpy.calls.reset();
+      fixture.detectChanges();
 
-        inputElement.value = 'Wor';
-        inputElement.dispatchEvent(new Event('input'));
-        fixture.detectChanges();
-        jasmine.clock().tick(0);
+      // Wait for the initial '' search to fire via debounce.
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-        expect(getOptionsFnSpy).not.toHaveBeenCalled();
-        jasmine.clock().tick(50);
+      expect(getOptionsFnSpy).toHaveBeenCalledWith('');
+      getOptionsFnSpy.calls.reset();
 
-        expect(getOptionsFnSpy).toHaveBeenCalledWith('Wor');
-      } finally {
-        jasmine.clock().uninstall();
-      }
+      inputElement.value = 'Wor';
+      inputElement.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      expect(getOptionsFnSpy).not.toHaveBeenCalled();
+
+      // Wait for debounce (debounceTimeMs=50, but 0 in test env).
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(getOptionsFnSpy).toHaveBeenCalledWith('Wor');
     });
   });
 });

@@ -17,11 +17,11 @@ describe('AttributeHelpTextComponent', () => {
   let modalServiceStub:jasmine.SpyObj<AttributeHelpTextModalService>;
   const i18nStub = { t: (_scope:string|string[], _options?:Record<string, any>) => 'Show help text' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     modalServiceStub = jasmine.createSpyObj('AttributeHelpTextModalService', ['show']);
     modalServiceStub.show.and.resolveTo();
 
-    void TestBed
+    await TestBed
       .configureTestingModule({
         declarations: [
           AttributeHelpTextComponent,
@@ -105,7 +105,9 @@ describe('AttributeHelpTextComponent', () => {
 
     expect(button.nativeElement.ariaDisabled).toEqual('true');
 
-    await Promise.resolve(); // flush Promise microtask queue
+    await Promise.resolve();
+    await modalServiceStub.show.calls.mostRecent().returnValue;
+    await new Promise(resolve => setTimeout(resolve, 0));
     fixture.detectChanges();
 
     expect(modalServiceStub.show).toHaveBeenCalledOnceWith('1');
@@ -125,7 +127,9 @@ describe('AttributeHelpTextComponent', () => {
     button.triggerEventHandler('keydown.space');
 
     fixture.detectChanges();
-    await Promise.resolve(); // flush Promise microtask queue
+    await Promise.resolve();
+    await modalServiceStub.show.calls.mostRecent().returnValue;
+    await new Promise(resolve => setTimeout(resolve, 0));
     fixture.detectChanges();
 
     expect(modalServiceStub.show).toHaveBeenCalledOnceWith('1');
