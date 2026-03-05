@@ -117,7 +117,7 @@ export class GridAreaService {
     return this.saveGrid(this.resource, this.schema);
   }
 
-  public saveWidgetChangeset(changeset:WidgetChangeset) {
+  public saveWidgetChangeset(changeset:WidgetChangeset):Promise<GridResource> {
     const payload:any = ApiV3GridForm.extractPayload(this.resource, this.schema);
 
     const payloadWidget = payload.widgets.find((w:any) => w.id === changeset.pristineResource.id);
@@ -126,7 +126,7 @@ export class GridAreaService {
     // Adding the id so that the url can be deduced
     payload.id = this.resource.id;
 
-    this.saveGrid(payload);
+    return this.saveGrid(payload);
   }
 
   public isGap(area:GridArea) {
@@ -172,7 +172,11 @@ export class GridAreaService {
         }),
       );
 
-    return firstValueFrom(subscription);
+    return firstValueFrom(subscription)
+      .catch((error:unknown) => {
+        this.toastService.addError(error instanceof Error ? error.message : String(error));
+        throw error;
+      });
   }
 
   private assignAreasWidget(newGrid:GridResource) {

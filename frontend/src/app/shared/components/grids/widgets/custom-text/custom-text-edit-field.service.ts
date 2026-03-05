@@ -1,7 +1,7 @@
 import { EditFieldHandler } from 'core-app/shared/components/fields/edit/editing-portal/edit-field-handler';
 import { ElementRef, Injectable, Injector } from '@angular/core';
 import { IFieldSchema } from 'core-app/shared/components/fields/field.base';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { GridWidgetResource } from 'core-app/features/hal/resources/grid-widget-resource';
 import { SchemaResource } from 'core-app/features/hal/resources/schema-resource';
 import { HalResourceService } from 'core-app/features/hal/services/hal-resource.service';
@@ -16,6 +16,8 @@ export class CustomTextEditFieldService extends EditFieldHandler {
   public fieldName = 'text';
 
   public valueChanged$:BehaviorSubject<string>;
+
+  public readonly stateChanged$ = new Subject<void>();
 
   public changeset:ResourceChangeset;
 
@@ -93,10 +95,12 @@ export class CustomTextEditFieldService extends EditFieldHandler {
   deactivate():void {
     this.changeset.clear();
     this.active = false;
+    this.stateChanged$.next();
   }
 
   activate() {
     this.active = true;
+    this.stateChanged$.next();
   }
 
   get inEditMode():boolean {

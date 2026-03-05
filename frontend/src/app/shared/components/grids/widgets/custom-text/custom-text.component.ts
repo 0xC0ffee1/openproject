@@ -65,6 +65,12 @@ export class WidgetCustomTextComponent extends AbstractWidgetComponent implement
       const changeset = this.setChangesetOptions({ text: { raw: newText } });
       this.resourceChanged.emit(changeset);
     });
+
+    this
+      .handler
+      .stateChanged$
+      .pipe(this.untilDestroyed())
+      .subscribe(() => this.cdr.markForCheck());
   }
 
   ngOnChanges(changes:SimpleChanges):void {
