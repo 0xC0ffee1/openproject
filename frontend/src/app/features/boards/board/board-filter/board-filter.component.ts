@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Board } from 'core-app/features/boards/board/board';
 import { CurrentProjectService } from 'core-app/core/current-project/current-project.service';
 import { WorkPackageStatesInitializationService } from 'core-app/features/work-packages/components/wp-list/wp-states-initialization.service';
@@ -18,6 +18,10 @@ import { ApiV3Service } from 'core-app/core/apiv3/api-v3.service';
   selector: 'board-filter',
   templateUrl: './board-filter.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BoardFilterComponent extends UntilDestroyedMixin implements AfterViewInit {
   /** Current active */

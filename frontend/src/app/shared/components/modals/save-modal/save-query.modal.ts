@@ -27,7 +27,7 @@
 //++
 
 import {
-  ChangeDetectorRef, Component, ElementRef, Inject, ViewChild,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild,
 } from '@angular/core';
 import { HalResourceNotificationService } from 'core-app/features/hal/services/hal-resource-notification.service';
 import { QueryResource } from 'core-app/features/hal/resources/query-resource';
@@ -44,6 +44,10 @@ import { States } from 'core-app/core/states/states.service';
 @Component({
   templateUrl: './save-query.modal.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SaveQueryModalComponent extends OpModalComponent {
   public queryName = '';
@@ -102,6 +106,7 @@ export class SaveQueryModalComponent extends OpModalComponent {
     }
 
     this.isBusy = true;
+    this.cdRef.markForCheck();
     const query = this.querySpace.query.value!;
     query.public = this.isPublic;
 
@@ -116,6 +121,6 @@ export class SaveQueryModalComponent extends OpModalComponent {
         return Promise.resolve(true);
       })
       .catch((error:any) => this.halNotification.handleRawError(error))
-      .then(() => this.isBusy = false); // Same as .finally()
+      .then(() => { this.isBusy = false; this.cdRef.markForCheck(); }); // Same as .finally()
   }
 }

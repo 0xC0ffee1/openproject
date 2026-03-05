@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ComponentRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { GridResource } from 'core-app/features/hal/resources/grid-resource';
 import { DomSanitizer } from '@angular/platform-browser';
 import { GridWidgetsService } from 'core-app/shared/components/grids/widgets/widgets.service';
@@ -34,6 +34,10 @@ export const GRID_PROVIDERS = [
   templateUrl: './grid.component.html',
   selector: 'grid',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GridComponent implements OnDestroy, OnInit {
   public uiWidgets:ComponentRef<any>[] = [];

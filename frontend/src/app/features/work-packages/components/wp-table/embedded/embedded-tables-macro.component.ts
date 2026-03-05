@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++    Ng1FieldControlsWrapper,
 
-import { Component, ElementRef, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core';
 import {
   WorkPackageTableConfigurationObject,
 } from 'core-app/features/work-packages/components/wp-table/wp-table-configuration';
@@ -38,6 +38,10 @@ import { populateInputsFromDataset } from 'core-app/shared/components/dataset-in
                              [configuration]="configuration" />
   `,
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EmbeddedTablesMacroComponent {
   @Input() public queryProps:object;

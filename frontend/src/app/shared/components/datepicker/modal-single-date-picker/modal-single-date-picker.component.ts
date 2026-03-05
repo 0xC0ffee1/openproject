@@ -28,6 +28,7 @@
 
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -53,7 +54,6 @@ import {
   SpotDropModalTeleportationService,
 } from 'core-app/spot/components/drop-modal/drop-modal-teleportation.service';
 
-// eslint-disable-next-line change-detection-strategy/on-push
 @Component({
   selector: 'op-modal-single-date-picker',
   templateUrl: './modal-single-date-picker.component.html',
@@ -67,6 +67,10 @@ import {
     },
   ],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class OpModalSingleDatePickerComponent implements ControlValueAccessor, OnInit, AfterContentInit {
   @Output() closed = new EventEmitter();

@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -24,6 +25,10 @@ import { ResourceChangeset } from 'core-app/shared/components/fields/changeset/r
   selector: 'edit-form-portal',
   templateUrl: './edit-form-portal.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditFormPortalComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() schemaInput:IFieldSchema;

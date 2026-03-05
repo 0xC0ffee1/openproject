@@ -29,6 +29,7 @@
 import { WorkPackagesListService } from 'core-app/features/work-packages/components/wp-list/wp-list.service';
 import { States } from 'core-app/core/states/states.service';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -51,6 +52,10 @@ import { BackRoutingService } from 'core-app/features/work-packages/components/b
 @Component({
   templateUrl: './wp-destroy.modal.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpDestroyModalComponent extends OpModalComponent implements OnInit {
   // When deleting multiple
@@ -152,12 +157,14 @@ export class WpDestroyModalComponent extends OpModalComponent implements OnInit 
     }
 
     this.busy = true;
+    this.cdRef.markForCheck();
     const ids = this.workPackages
       .map((el) => el.id)
       .filter((id) => id !== null);
     this.workPackageService.performBulkDelete(ids, true)
       .then(() => {
         this.busy = false;
+        this.cdRef.markForCheck();
         this.closeMe($event);
         this.wpTableFocus.clear('Clearing after destroying work packages');
         if (this.$state.current.data?.baseRoute) {
@@ -169,6 +176,7 @@ export class WpDestroyModalComponent extends OpModalComponent implements OnInit 
       })
       .catch(() => {
         this.busy = false;
+        this.cdRef.markForCheck();
       });
 
     return false;

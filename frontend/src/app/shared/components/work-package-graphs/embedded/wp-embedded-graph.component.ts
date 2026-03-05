@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { WorkPackageTableConfiguration } from 'core-app/features/work-packages/components/wp-table/wp-table-configuration';
 import { ChartOptions } from 'chart.js';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
@@ -28,7 +28,11 @@ interface ChartDataSet {
   ],
   providers: [
     provideCharts(withDefaultRegisterables(ChartDataLabels, PrimerColorsPlugin)),
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageEmbeddedGraphComponent implements OnChanges {
   @Input() public datasets:WorkPackageEmbeddedGraphDataset[];

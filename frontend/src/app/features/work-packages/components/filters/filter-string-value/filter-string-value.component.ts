@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { Component, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { HalResource } from 'core-app/features/hal/resources/hal-resource';
 import { DebouncedEventEmitter } from 'core-app/shared/helpers/rxjs/debounced-event-emitter';
@@ -38,6 +38,10 @@ import { QueryFilterInstanceResource } from 'core-app/features/hal/resources/que
   selector: 'op-filter-string-value',
   templateUrl: './filter-string-value.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class FilterStringValueComponent extends UntilDestroyedMixin {
   @Input() public shouldFocus = false;

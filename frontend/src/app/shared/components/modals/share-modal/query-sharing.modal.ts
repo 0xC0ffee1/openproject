@@ -35,7 +35,7 @@ import { OpModalComponent } from 'core-app/shared/components/modal/modal.compone
 import { OpModalLocalsToken } from 'core-app/shared/components/modal/modal.service';
 import { OpModalLocalsMap } from 'core-app/shared/components/modal/modal.types';
 import {
-  ChangeDetectorRef, Component, ElementRef, Inject, OnInit,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit,
 } from '@angular/core';
 import { QuerySharingChange } from 'core-app/shared/components/modals/share-modal/query-sharing-form.component';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
@@ -44,6 +44,10 @@ import { IsolatedQuerySpace } from 'core-app/features/work-packages/directives/q
 @Component({
   templateUrl: './query-sharing.modal.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class QuerySharingModalComponent extends OpModalComponent implements OnInit {
   public query:QueryResource;
@@ -103,6 +107,7 @@ export class QuerySharingModalComponent extends OpModalComponent implements OnIn
     }
 
     this.isBusy = true;
+    this.cdRef.markForCheck();
     const promises = [];
 
     if (this.query.public !== this.isPublic) {
@@ -120,10 +125,12 @@ export class QuerySharingModalComponent extends OpModalComponent implements OnIn
       .then(() => {
         this.closeMe($event);
         this.isBusy = false;
+        this.cdRef.markForCheck();
       })
       .catch(() => {
         this.toastService.addError(this.I18n.t('js.error.query_saving'));
         this.isBusy = false;
+        this.cdRef.markForCheck();
       });
   }
 }

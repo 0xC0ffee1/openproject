@@ -1,7 +1,7 @@
 import { WorkPackageResource } from 'core-app/features/hal/resources/work-package-resource';
 import { PathHelperService } from 'core-app/core/path-helper/path-helper.service';
 import {
-  ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild,
 } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { HalEventsService } from 'core-app/features/hal/services/hal-events.service';
@@ -17,6 +17,10 @@ import { Highlighting } from 'core-app/features/work-packages/components/wp-fast
   selector: 'wp-relation-row',
   templateUrl: './wp-relation-row.template.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageRelationRowComponent extends UntilDestroyedMixin implements OnInit {
   @Input() public workPackage:WorkPackageResource;
@@ -93,6 +97,7 @@ export class WorkPackageRelationRowComponent extends UntilDestroyedMixin impleme
         this.untilDestroyed(),
       ).subscribe((wp) => {
         this.relatedWorkPackage = wp;
+        this.cdRef.markForCheck();
       });
   }
 

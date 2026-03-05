@@ -1,14 +1,17 @@
 import {
-  Component, ContentChild, HostBinding, Input, Optional,
+  ChangeDetectionStrategy, Component, ContentChild, HostBinding, Input, Optional,
 } from '@angular/core';
 import { AbstractControl, FormGroupDirective, NgControl } from '@angular/forms';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 
-/* eslint-disable-next-line change-detection-strategy/on-push */
 @Component({
   selector: 'spot-form-field',
   templateUrl: './form-field.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SpotFormFieldComponent {
   @HostBinding('class.spot-form-field') className = true;

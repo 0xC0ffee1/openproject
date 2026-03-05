@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, OnInit } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { QueryColumn } from 'core-app/features/work-packages/components/wp-query/query-column';
 import {
@@ -14,6 +14,10 @@ import {
 @Component({
   templateUrl: './columns-tab.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpTableConfigurationColumnsTabComponent implements TabComponent, OnInit {
   public availableColumnsOptions = this.wpTableColumns.all.map((c) => this.column2Like(c));

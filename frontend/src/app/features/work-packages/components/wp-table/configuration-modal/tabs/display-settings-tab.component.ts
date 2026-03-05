@@ -3,13 +3,17 @@ import { TabComponent } from 'core-app/features/work-packages/components/wp-tabl
 import { WorkPackageViewGroupByService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-group-by.service';
 import { WorkPackageViewHierarchiesService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-hierarchy.service';
 import { WorkPackageViewSumService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-sum.service';
-import { Component, Injector, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit } from '@angular/core';
 import { QueryGroupByResource } from 'core-app/features/hal/resources/query-group-by-resource';
 
 @Component({
   selector: 'op-wp-table-configuration-settings-tab',
   templateUrl: './display-settings-tab.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpTableConfigurationDisplaySettingsTabComponent implements TabComponent, OnInit {
   // Display mode
@@ -46,6 +50,7 @@ export class WpTableConfigurationDisplaySettingsTabComponent implements TabCompo
     readonly wpTableGroupBy:WorkPackageViewGroupByService,
     readonly wpTableHierarchies:WorkPackageViewHierarchiesService,
     readonly wpTableSums:WorkPackageViewSumService,
+    readonly cdRef:ChangeDetectorRef,
   ) { }
 
   public onSave() {
@@ -79,6 +84,7 @@ export class WpTableConfigurationDisplaySettingsTabComponent implements TabCompo
       .then(() => {
         this.availableGroups = _.sortBy(this.wpTableGroupBy.available, 'name');
         this.currentGroup = this.wpTableGroupBy.current || this.availableGroups[0];
+        this.cdRef.markForCheck();
       });
   }
 }

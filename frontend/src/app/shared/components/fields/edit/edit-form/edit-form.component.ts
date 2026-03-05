@@ -27,6 +27,8 @@
 //++
 
 import {
+  ApplicationRef,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -36,7 +38,6 @@ import {
   OnInit,
   Optional,
   Output,
-  ApplicationRef,
 } from '@angular/core';
 import { StateService, Transition, TransitionService } from '@uirouter/core';
 import { ConfigurationService } from 'core-app/core/config/configuration.service';
@@ -62,6 +63,10 @@ import { firstValueFrom } from 'rxjs';
   selector: 'edit-form,[edit-form]',
   template: '<ng-content />',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditFormComponent extends EditForm<HalResource> implements OnInit, OnDestroy {
   @Input() resource:HalResource;

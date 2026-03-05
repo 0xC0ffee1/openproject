@@ -1,14 +1,15 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
-  ViewChild,
-  forwardRef,
+  EventEmitter,
   HostBinding,
   HostListener,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectorRef,
+  ViewChild,
+  forwardRef,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -24,6 +25,10 @@ import {
     multi: true,
   }],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SpotTextFieldComponent implements ControlValueAccessor {
   @HostBinding('class.spot-text-field') public className = true;
@@ -100,11 +105,13 @@ export class SpotTextFieldComponent implements ControlValueAccessor {
 
   onInputFocus(event:FocusEvent):void {
     this.focused = true;
+    this.cdRef.markForCheck();
     this.inputFocus.next(event);
   }
 
   onInputBlur(event:FocusEvent):void {
     this.focused = false;
+    this.cdRef.markForCheck();
     this.inputBlur.next(event);
   }
 

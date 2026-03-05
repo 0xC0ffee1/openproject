@@ -1,6 +1,6 @@
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { WorkPackageViewGroupByService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-group-by.service';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { WpGraphConfigurationService } from 'core-app/shared/components/work-package-graphs/configuration/wp-graph-configuration.service';
 import { WorkPackageStatesInitializationService } from 'core-app/features/work-packages/components/wp-list/wp-states-initialization.service';
 import { TabComponent } from 'core-app/features/work-packages/components/wp-table/configuration-modal/tab-portal-outlet';
@@ -17,6 +17,10 @@ interface OpChartType {
   selector: 'op-settings-tab-inner',
   templateUrl: './settings-tab-inner.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpGraphConfigurationSettingsTabInnerComponent extends QuerySpacedTabComponent implements TabComponent, OnInit {
   // Grouping
@@ -34,7 +38,8 @@ export class WpGraphConfigurationSettingsTabInnerComponent extends QuerySpacedTa
   constructor(readonly I18n:I18nService,
     readonly wpTableGroupBy:WorkPackageViewGroupByService,
     readonly wpStatesInitialization:WorkPackageStatesInitializationService,
-    readonly wpGraphConfiguration:WpGraphConfigurationService) {
+    readonly wpGraphConfiguration:WpGraphConfigurationService,
+    private cdRef:ChangeDetectorRef) {
     super(I18n, wpStatesInitialization, wpGraphConfiguration);
   }
 
@@ -62,6 +67,7 @@ export class WpGraphConfigurationSettingsTabInnerComponent extends QuerySpacedTa
           .then(() => {
             this.initializeAvailableGroups();
             this.initializeAvailableChartType();
+            this.cdRef.markForCheck();
           });
       });
   }

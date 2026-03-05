@@ -1,7 +1,7 @@
 import { States } from 'core-app/core/states/states.service';
 import { AuthorisationService } from 'core-app/core/model-auth/model-auth.service';
 import {
-  Component, EventEmitter, Input, Output,
+  ChangeDetectionStrategy, Component, EventEmitter, Input, Output,
 } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { IsolatedQuerySpace } from 'core-app/features/work-packages/directives/query-space/isolated-query-space';
@@ -15,6 +15,10 @@ export interface QuerySharingChange {
   selector: 'query-sharing-form',
   templateUrl: './query-sharing-form.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class QuerySharingFormComponent {
   @Input() public isSave:boolean;

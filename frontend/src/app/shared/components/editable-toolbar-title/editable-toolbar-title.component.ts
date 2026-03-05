@@ -26,6 +26,8 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -50,6 +52,10 @@ export const selectableTitleIdentifier = 'editable-toolbar-title';
   templateUrl: './editable-toolbar-title.html',
   styleUrls: ['./editable-toolbar-title.sass'],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditableToolbarTitleComponent implements OnInit, OnChanges {
   @Input('title') public inputTitle:string;
@@ -95,7 +101,7 @@ export class EditableToolbarTitleComponent implements OnInit, OnChanges {
     duplicate_query_title: this.I18n.t('js.work_packages.query.errors.duplicate_query_title'),
   };
 
-  constructor(readonly injector:Injector) {
+  constructor(readonly injector:Injector, private cdRef:ChangeDetectorRef) {
   }
 
   ngOnInit():void {
@@ -108,6 +114,7 @@ export class EditableToolbarTitleComponent implements OnInit, OnChanges {
       }
 
       this.selectedTitle = evt.detail ?? '';
+      this.cdRef.markForCheck();
       setTimeout(() => {
         const field:HTMLInputElement = this.inputField!.nativeElement;
         field.focus();
@@ -188,7 +195,7 @@ export class EditableToolbarTitleComponent implements OnInit, OnChanges {
     this.emitSave(this.selectedTitle);
 
     // Unset in-flight after some delay not to trigger the blur
-    setTimeout(() => this.inFlight = false, 100);
+    setTimeout(() => { this.inFlight = false; this.cdRef.markForCheck(); }, 100);
   }
 
   public get isEmpty():boolean {

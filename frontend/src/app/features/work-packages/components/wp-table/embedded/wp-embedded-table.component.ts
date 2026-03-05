@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import {
   WorkPackageViewTimelineService,
 } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-timeline.service';
@@ -31,6 +31,10 @@ import { QueryRequestParams } from 'core-app/features/work-packages/components/w
   selector: 'wp-embedded-table',
   templateUrl: './wp-embedded-table.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageEmbeddedTableComponent extends WorkPackageEmbeddedBaseComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() public queryId?:string;
@@ -169,6 +173,7 @@ export class WorkPackageEmbeddedTableComponent extends WorkPackageEmbeddedBaseCo
           'js.error.embedded_table_loading',
           { message: _.get(error, 'message', error) },
         );
+        this.cdRef.markForCheck();
         this.onError.emit(error);
       });
 

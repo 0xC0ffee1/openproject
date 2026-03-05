@@ -29,7 +29,7 @@
 import { WorkPackageResource } from 'core-app/features/hal/resources/work-package-resource';
 import { HalResourceEditingService } from 'core-app/shared/components/fields/edit/services/hal-resource-editing.service';
 import {
-  ChangeDetectorRef, Component, Input, OnInit,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit,
 } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { Highlighting } from 'core-app/features/work-packages/components/wp-fast-table/builders/highlighting/highlighting.functions';
@@ -42,6 +42,10 @@ import { SchemaCacheService } from 'core-app/core/schemas/schema-cache.service';
   styleUrls: ['./wp-status-button.component.sass'],
   templateUrl: './wp-status-button.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageStatusButtonComponent extends UntilDestroyedMixin implements OnInit {
   @Input() public workPackage:WorkPackageResource;

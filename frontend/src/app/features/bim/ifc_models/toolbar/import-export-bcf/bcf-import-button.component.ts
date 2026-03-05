@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { CurrentProjectService } from 'core-app/core/current-project/current-project.service';
 import { BcfPathHelperService } from 'core-app/features/bim/bcf/helper/bcf-path-helper.service';
@@ -42,6 +42,10 @@ import { BcfPathHelperService } from 'core-app/features/bim/bcf/helper/bcf-path-
   `,
   selector: 'bcf-import-button',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BcfImportButtonComponent {
   public text = {

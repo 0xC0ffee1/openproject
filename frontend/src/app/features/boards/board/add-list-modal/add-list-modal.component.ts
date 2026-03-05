@@ -27,7 +27,7 @@
 //++
 
 import {
-  ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild,
 } from '@angular/core';
 import { OpModalLocalsMap } from 'core-app/shared/components/modal/modal.types';
 import { OpModalComponent } from 'core-app/shared/components/modal/modal.component';
@@ -52,6 +52,10 @@ import { HalResource } from 'core-app/features/hal/resources/hal-resource';
 @Component({
   templateUrl: './add-list-modal.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddListModalComponent extends OpModalComponent implements OnInit {
   @ViewChild(OpAutocompleterComponent, { static: true }) public ngSelectComponent:OpAutocompleterComponent;
@@ -143,7 +147,10 @@ export class AddListModalComponent extends OpModalComponent implements OnInit {
         this.closeMe();
         void this.state.go('boards.partitioned.show', { board_id: board.id, isNew: true });
       })
-      .catch(() => (this.inFlight = false));
+      .catch(() => {
+        this.inFlight = false;
+        this.cdRef.detectChanges();
+      });
   }
 
   onNewActionCreated() {
@@ -190,6 +197,7 @@ export class AddListModalComponent extends OpModalComponent implements OnInit {
       .warningTextWhenNoOptionsAvailable(hasMember)
       .then((text) => {
         this.warningText = text;
+        this.cdRef.detectChanges();
       })
       .catch(() => {});
     this.showWarning = this.ngSelectComponent.ngSelectInstance.searchTerm !== undefined && (values.length === 0);

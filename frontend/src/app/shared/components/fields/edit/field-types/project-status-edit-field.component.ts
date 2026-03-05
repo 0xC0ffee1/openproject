@@ -27,7 +27,7 @@
 //++
 
 import { I18nService } from 'core-app/core/i18n/i18n.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { EditFieldComponent } from 'core-app/shared/components/fields/edit/edit-field.component';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import {
@@ -49,6 +49,10 @@ interface ProjectStatusOption {
   templateUrl: './project-status-edit-field.component.html',
   styleUrls: ['./project-status-edit-field.component.sass'],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ProjectStatusEditFieldComponent extends EditFieldComponent implements OnInit {
   @ViewChild(NgSelectComponent, { static: true }) public ngSelectComponent:NgSelectComponent;
@@ -79,6 +83,7 @@ export class ProjectStatusEditFieldComponent extends EditFieldComponent implemen
             colorClass: projectStatusCodeCssClass(status.id),
           }];
       });
+      this.cdRef.markForCheck();
 
       // The timeout takes care that the opening is added to the end of the current call stack.
       // Thus we can be sure that the select box is rendered and ready to be opened.

@@ -1,4 +1,6 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Injector,
   OnInit,
@@ -16,6 +18,10 @@ import { SchemaCacheService } from 'core-app/core/schemas/schema-cache.service';
   templateUrl: './wp-table-configuration-relation-selector.html',
   selector: 'wp-table-configuration-relation-selector',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpTableConfigurationRelationSelectorComponent implements OnInit {
   private relationFilterIds:string[] = [
@@ -60,7 +66,8 @@ export class WpTableConfigurationRelationSelectorComponent implements OnInit {
     readonly I18n:I18nService,
     readonly wpTableFilters:WorkPackageViewFiltersService,
     readonly ConfigurationService:ConfigurationService,
-    readonly schemaCache:SchemaCacheService) {
+    readonly schemaCache:SchemaCacheService,
+    readonly cdRef:ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -71,6 +78,7 @@ export class WpTableConfigurationRelationSelectorComponent implements OnInit {
       .then(() => {
         self.availableRelationFilters = self.relationFiltersOf(self.wpTableFilters.availableFilters) as QueryFilterResource[];
         self.setSelectedRelationFilter();
+        self.cdRef.markForCheck();
       });
   }
 

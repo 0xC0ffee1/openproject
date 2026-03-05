@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { Component, HostBinding, Injector, Input, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Injector, Input, ViewEncapsulation } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { WorkPackageResource } from 'core-app/features/hal/resources/work-package-resource';
 import { EditFormComponent } from 'core-app/shared/components/fields/edit/edit-form/edit-form.component';
@@ -42,6 +42,10 @@ import {
   styleUrls: ['./wp-attribute-group.component.sass'],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageFormAttributeGroupComponent extends UntilDestroyedMixin {
   @HostBinding('class.wp-attribute-group') className = true;

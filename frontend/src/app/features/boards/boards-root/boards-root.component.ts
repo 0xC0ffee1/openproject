@@ -1,4 +1,4 @@
-import { Component, Injector } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector } from '@angular/core';
 import { BoardConfigurationService } from 'core-app/features/boards/board/configuration-modal/board-configuration.service';
 import { BoardActionsRegistryService } from 'core-app/features/boards/board/board-actions/board-actions-registry.service';
 import { BoardStatusActionService } from 'core-app/features/boards/board/board-actions/status/status-action.service';
@@ -25,6 +25,10 @@ import {
     QueryUpdatedService,
   ],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BoardsRootComponent {
   constructor(readonly injector:Injector) {

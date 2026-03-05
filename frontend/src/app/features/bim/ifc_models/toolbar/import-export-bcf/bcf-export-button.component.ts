@@ -27,7 +27,7 @@
 //++
 
 import {
-  Component, Injector, OnDestroy, OnInit,
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnDestroy, OnInit,
 } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { CurrentProjectService } from 'core-app/core/current-project/current-project.service';
@@ -53,6 +53,10 @@ import { JobStatusModalService } from 'core-app/features/job-status/job-status-m
   `,
   selector: 'bcf-export-button',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BcfExportButtonComponent extends UntilDestroyedMixin implements OnInit, OnDestroy {
   public text = {
@@ -73,7 +77,8 @@ export class BcfExportButtonComponent extends UntilDestroyedMixin implements OnI
     readonly httpClient:HttpClient,
     readonly injector:Injector,
     readonly toastService:ToastService,
-    readonly state:StateService) {
+    readonly state:StateService,
+    readonly cdRef:ChangeDetectorRef) {
     super();
   }
 
@@ -92,6 +97,7 @@ export class BcfExportButtonComponent extends UntilDestroyedMixin implements OnI
           projectIdentifier!,
           JSON.stringify(filters),
         );
+        this.cdRef.markForCheck();
       });
   }
 

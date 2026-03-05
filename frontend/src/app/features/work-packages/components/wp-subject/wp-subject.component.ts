@@ -27,6 +27,7 @@
 //++
 
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
 } from '@angular/core';
@@ -40,6 +41,10 @@ import { ApiV3Service } from 'core-app/core/apiv3/api-v3.service';
   selector: 'wp-subject',
   templateUrl: './wp-subject.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WorkPackageSubjectComponent extends UntilDestroyedMixin {
   @Input() workPackage:WorkPackageResource;

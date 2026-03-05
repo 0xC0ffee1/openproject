@@ -1,5 +1,5 @@
 import {
-  ApplicationRef, ChangeDetectorRef, Component, ElementRef, Inject, Injector, OnInit,
+  ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, Injector, OnInit,
 } from '@angular/core';
 import { OpModalLocalsMap } from 'core-app/shared/components/modal/modal.types';
 import { OpModalComponent } from 'core-app/shared/components/modal/modal.component';
@@ -14,6 +14,10 @@ import { TimeEntriesCurrentUserConfigurationModalService } from 'core-app/shared
   templateUrl: './configuration.modal.html',
   providers: [TimeEntriesCurrentUserConfigurationModalService],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TimeEntriesCurrentUserConfigurationModalComponent extends OpModalComponent implements OnInit {
   public text = {

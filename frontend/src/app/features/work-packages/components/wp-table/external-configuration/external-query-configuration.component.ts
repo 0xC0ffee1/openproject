@@ -1,5 +1,5 @@
 import {
-  AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, ViewChild,
+  AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, ViewChild,
 } from '@angular/core';
 import { WorkPackageEmbeddedTableComponent } from 'core-app/features/work-packages/components/wp-table/embedded/wp-embedded-table.component';
 import { WpTableConfigurationService } from 'core-app/features/work-packages/components/wp-table/configuration-modal/wp-table-configuration.service';
@@ -23,6 +23,10 @@ export interface QueryConfigurationLocals {
   hostDirectives: [WorkPackageIsolatedQuerySpaceDirective],
   providers: [[{ provide: WpTableConfigurationService, useClass: RestrictedWpTableConfigurationService }]],
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExternalQueryConfigurationComponent implements OnInit, AfterViewInit {
   @ViewChild('embeddedTableForConfiguration', { static: true }) private embeddedTable:WorkPackageEmbeddedTableComponent;

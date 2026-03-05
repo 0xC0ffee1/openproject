@@ -27,6 +27,7 @@
 //++
 
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   HostBinding,
@@ -54,6 +55,10 @@ import { WorkPackageViewBaselineService } from 'core-app/features/work-packages/
   templateUrl: './query-filter.component.html',
   encapsulation: ViewEncapsulation.None,
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class QueryFilterComponent implements OnInit {
   @HostBinding('class.op-query-filter') className = true;

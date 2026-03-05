@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, OnInit } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { WorkPackageViewSortByService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-sort-by.service';
 import { TabComponent } from 'core-app/features/work-packages/components/wp-table/configuration-modal/tab-portal-outlet';
@@ -24,6 +24,10 @@ export type SortingMode = 'automatic'|'manual';
 @Component({
   templateUrl: './sort-by-tab.component.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpTableConfigurationSortByTabComponent implements TabComponent, OnInit {
   public text = {
@@ -59,7 +63,8 @@ export class WpTableConfigurationSortByTabComponent implements TabComponent, OnI
 
   constructor(readonly injector:Injector,
     readonly I18n:I18nService,
-    readonly wpTableSortBy:WorkPackageViewSortByService) {
+    readonly wpTableSortBy:WorkPackageViewSortByService,
+    readonly cdRef:ChangeDetectorRef) {
 
   }
 
@@ -105,6 +110,7 @@ export class WpTableConfigurationSortByTabComponent implements TabComponent, OnI
 
         this.updateUsedColumns();
         this.fillUpSortElements();
+        this.cdRef.markForCheck();
       });
   }
 

@@ -1,5 +1,6 @@
 import {
   ApplicationRef,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentFactoryResolver,
@@ -41,6 +42,10 @@ export const WpTableConfigurationModalPrependToken = new InjectionToken<Componen
 @Component({
   templateUrl: './wp-table-configuration.modal.html',
   standalone: false,
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WpTableConfigurationModalComponent extends OpModalComponent implements OnInit, OnDestroy {
   public text = {
