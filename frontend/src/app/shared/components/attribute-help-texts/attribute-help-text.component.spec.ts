@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { AttributeHelpTextComponent } from 'core-app/shared/components/attribute-help-texts/attribute-help-text.component';
 import { By } from '@angular/platform-browser';
@@ -97,7 +97,7 @@ describe('AttributeHelpTextComponent', () => {
     expect(button.nativeElement.dataset.qaHelpTextFor).toEqual('subject');
   });
 
-  it('should call modalService on click', fakeAsync(() => {
+  it('should call modalService on click', async () => {
     const button = element.query(By.css("[role='button']"));
     button.nativeElement.click();
 
@@ -105,14 +105,14 @@ describe('AttributeHelpTextComponent', () => {
 
     expect(button.nativeElement.ariaDisabled).toEqual('true');
 
-    flush();
+    await Promise.resolve(); // flush Promise microtask queue
     fixture.detectChanges();
 
     expect(modalServiceStub.show).toHaveBeenCalledOnceWith('1');
     expect(button.nativeElement.ariaDisabled).toEqual('false');
-  }));
+  });
 
-  it('should call modalService only once', fakeAsync(() => {
+  it('should call modalService only once', async () => {
     const button = element.query(By.css("[role='button']"));
     button.nativeElement.click();
 
@@ -125,10 +125,10 @@ describe('AttributeHelpTextComponent', () => {
     button.triggerEventHandler('keydown.space');
 
     fixture.detectChanges();
-    flush();
+    await Promise.resolve(); // flush Promise microtask queue
     fixture.detectChanges();
 
     expect(modalServiceStub.show).toHaveBeenCalledOnceWith('1');
     expect(button.nativeElement.ariaDisabled).toEqual('false');
-  }));
+  });
 });

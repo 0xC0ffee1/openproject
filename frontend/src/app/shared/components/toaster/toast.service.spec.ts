@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ToastService } from 'core-app/shared/components/toaster/toast.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ConfigurationService } from 'core-app/core/config/configuration.service';
@@ -38,9 +38,8 @@ import { HttpEvent, provideHttpClient, withInterceptorsFromDi } from '@angular/c
 describe('ToastService', () => {
   let toastService:ToastService;
 
-  beforeEach(waitForAsync(() => {
-    // noinspection JSIgnoredPromiseFromCall
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
     imports: [OpenprojectHalModule],
     providers: [
         { provide: ConfigurationService, useValue: { autoHidePopups: () => true } },
@@ -49,12 +48,9 @@ describe('ToastService', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
     ]
-})
-      .compileComponents()
-      .then(() => {
-        toastService = TestBed.inject(ToastService);
-      });
-  }));
+}).compileComponents();
+    toastService = TestBed.inject(ToastService);
+  });
 
   it('should be able to create warnings', () => {
     const toaster = toastService.addWarning('warning!');

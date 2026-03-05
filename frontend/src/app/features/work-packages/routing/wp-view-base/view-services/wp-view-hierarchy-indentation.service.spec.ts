@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { States } from 'core-app/core/states/states.service';
 import { IsolatedQuerySpace } from 'core-app/features/work-packages/directives/query-space/isolated-query-space';
 import { WorkPackageViewHierarchiesService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-hierarchy.service';
@@ -58,7 +58,7 @@ describe('WorkPackageViewIndentation service', () => {
     };
   }
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     parentServiceSpy = jasmine.createSpyObj(
       'WorkPackageRelationHierarchyService',
       ['changeParent'],
@@ -66,8 +66,7 @@ describe('WorkPackageViewIndentation service', () => {
 
     parentServiceSpy.changeParent.and.resolveTo();
 
-    // noinspection JSIgnoredPromiseFromCall
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [
         States,
         IsolatedQuerySpace,
@@ -77,15 +76,12 @@ describe('WorkPackageViewIndentation service', () => {
         { provide: WorkPackageRelationsHierarchyService, useValue: parentServiceSpy },
         WorkPackageViewHierarchyIdentationService,
       ],
-    })
-      .compileComponents()
-      .then(() => {
-        service = TestBed.inject(WorkPackageViewHierarchyIdentationService);
-        querySpace = TestBed.inject(IsolatedQuerySpace);
-        hierarchyServiceStub = TestBed.inject(WorkPackageViewHierarchiesService);
-        states = TestBed.inject(States);
-      });
-  }));
+    }).compileComponents();
+    service = TestBed.inject(WorkPackageViewHierarchyIdentationService);
+    querySpace = TestBed.inject(IsolatedQuerySpace);
+    hierarchyServiceStub = TestBed.inject(WorkPackageViewHierarchiesService);
+    states = TestBed.inject(States);
+  });
 
   describe('canIndent', () => {
     it('Cannot indent without changeParent link', () => {

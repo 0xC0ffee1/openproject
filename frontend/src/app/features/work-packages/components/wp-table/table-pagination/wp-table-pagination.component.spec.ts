@@ -28,7 +28,7 @@
 
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { IsolatedQuerySpace } from 'core-app/features/work-packages/directives/query-space/isolated-query-space';
-import { inject, TestBed, waitForAsync } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { States } from 'core-app/core/states/states.service';
 import { WorkPackageViewPaginationService } from 'core-app/features/work-packages/routing/wp-view-base/view-services/wp-view-pagination.service';
 import { WorkPackageTablePaginationComponent } from 'core-app/features/work-packages/components/wp-table/table-pagination/wp-table-pagination.component';
@@ -67,15 +67,14 @@ function pageString(element:HTMLElement) {
 }
 
 describe('wpTablePagination Directive', () => {
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     window.OpenProject = new OpenProject();
 
     const WeekdayServiceStub = {
       loadWeekdays: () => of(true),
     };
 
-    // noinspection JSIgnoredPromiseFromCall
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
     declarations: [
         WorkPackageTablePaginationComponent,
         OpIconComponent,
@@ -95,7 +94,7 @@ describe('wpTablePagination Directive', () => {
         provideHttpClient(withInterceptorsFromDi()),
     ]
 }).compileComponents();
-  }));
+  });
 
   describe('page ranges and links', () => {
     it('should display the correct page range',

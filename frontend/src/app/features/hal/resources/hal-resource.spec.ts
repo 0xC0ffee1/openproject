@@ -27,7 +27,7 @@
 //++
 
 import { Injector } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { HalResource } from 'core-app/features/hal/resources/hal-resource';
 import { States } from 'core-app/core/states/states.service';
@@ -49,9 +49,8 @@ describe('HalResource', () => {
   class OtherResource extends HalResource {
   }
 
-  beforeEach(waitForAsync(() => {
-    // noinspection JSIgnoredPromiseFromCall
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
     imports: [OpenprojectHalModule],
     providers: [
         HalResourceService,
@@ -60,13 +59,10 @@ describe('HalResource', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
     ]
-})
-      .compileComponents()
-      .then(() => {
-        halResourceService = TestBed.inject(HalResourceService);
-        injector = TestBed.inject(Injector);
-      });
-  }));
+}).compileComponents();
+    halResourceService = TestBed.inject(HalResourceService);
+    injector = TestBed.inject(Injector);
+  });
 
   it('should be instantiable using a default object', () => {
     const resource = halResourceService.createHalResource({}, true);

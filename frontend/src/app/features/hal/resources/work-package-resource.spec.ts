@@ -26,7 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { HalResourceService } from 'core-app/features/hal/services/hal-resource.service';
 import { Injector } from '@angular/core';
 import { States } from 'core-app/core/states/states.service';
@@ -68,9 +68,8 @@ describe('WorkPackage', () => {
     loadWeekdays: () => of(true),
   };
 
-  beforeEach(waitForAsync(() => {
-    // noinspection JSIgnoredPromiseFromCall
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
     imports: [OpenprojectHalModule],
     providers: [
         HalResourceService,
@@ -91,16 +90,13 @@ describe('WorkPackage', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
     ]
-})
-      .compileComponents()
-      .then(() => {
-        halResourceService = TestBed.inject(HalResourceService);
-        injector = TestBed.inject(Injector);
-        halResourceNotification = injector.get(HalResourceNotificationService);
+}).compileComponents();
+    halResourceService = TestBed.inject(HalResourceService);
+    injector = TestBed.inject(Injector);
+    halResourceNotification = injector.get(HalResourceNotificationService);
 
-        halResourceService.registerResource('WorkPackage', { cls: WorkPackageResource });
-      });
-  }));
+    halResourceService.registerResource('WorkPackage', { cls: WorkPackageResource });
+  });
 
   describe('when creating an empty work package', () => {
     beforeEach(createWorkPackage);

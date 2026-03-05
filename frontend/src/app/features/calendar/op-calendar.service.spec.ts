@@ -26,18 +26,17 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-import { waitForAsync } from '@angular/core/testing';
 import { OpCalendarService } from 'core-app/features/calendar/op-calendar.service';
 
 describe('OP calendar service', () => {
   let service:OpCalendarService;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     // This is not a valid constructor call, but since we only want to test a helper method that does not
     // depend on injected services, we can pass null values here.
     // @ts-expect-error ignore invalid constructor call since we don't need a completely valid instance
     service = new OpCalendarService(null, null, null);
-  }));
+  });
 
   describe('stripYearFromDateFormat', () => {
     it('from dotted syntax', () => {
