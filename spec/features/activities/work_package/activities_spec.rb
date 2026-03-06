@@ -958,10 +958,13 @@ RSpec.describe "Work package activity", :js, :with_cuprite, with_ee: %i[internal
       # navigate to another tab and back
       page.find("li[data-tab-id=\"relations\"]").click
       page.find("li[data-tab-id=\"activity\"]").click
+      wp_page.wait_for_activity_tab
 
       # expect the editor content to be rescued on the client side
       within_test_selector("op-work-package-journal-form-element") do
         editor = FormFields::Primerized::EditorFormField.new("notes", selector: "#work-package-journal-form-element")
+        # Wait for CKEditor to be fully initialized and have the rescued content
+        expect(page).to have_css(".ck-editor__editable_inline", text: "First comment by admin", wait: 10)
         editor.expect_value("First comment by admin")
         # save the comment, which was rescued on the client side
         page.find_test_selector("op-submit-work-package-journal-form").click
