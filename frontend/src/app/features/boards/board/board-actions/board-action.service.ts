@@ -22,6 +22,7 @@ import { WorkPackageResource } from 'core-app/features/hal/resources/work-packag
 import { HalResourceService } from 'core-app/features/hal/services/hal-resource.service';
 import { HalResource } from 'core-app/features/hal/resources/hal-resource';
 import idFromLink from 'core-app/features/hal/helpers/id-from-link';
+import { Highlighting } from 'core-app/features/work-packages/components/wp-fast-table/builders/highlighting/highlighting.functions';
 
 @Injectable()
 export abstract class BoardActionService {
@@ -79,7 +80,7 @@ export abstract class BoardActionService {
    * Returns the current filter instance
    * @param query
    */
-  getActionFilter(query:QueryResource, getHref = false):QueryFilterInstanceResource|undefined {
+  getActionFilter(query:QueryResource, _getHref = false):QueryFilterInstanceResource|undefined {
     return query.filters.find((filter) => filter.id === this.filterName);
   }
 
@@ -89,18 +90,27 @@ export abstract class BoardActionService {
    * @returns The id of the resource
    */
   getActionValueId(query:QueryResource, getHref = false):string|undefined {
+    return this.getActionValueIds(query, getHref)[0];
+  }
+
+  /**
+   * Returns the current filter value ids if any
+   * @param query
+   * @returns The ids of the resources
+   */
+  getActionValueIds(query:QueryResource, getHref = false):string[] {
     const filter = this.getActionFilter(query);
     if (!filter) {
-      return;
+      return [];
     }
 
-    const value = filter.values[0];
+    return filter.values.map((value) => {
+      if (value instanceof HalResource) {
+        return getHref ? value.href! : value.id!;
+      }
 
-    if (value instanceof HalResource) {
-      return getHref ? value.href! : value.id!;
-    }
-
-    return value;
+      return value;
+    });
   }
 
   /**
@@ -116,6 +126,19 @@ export abstract class BoardActionService {
     }
 
     return this.require(id);
+  }
+
+  /**
+   * Returns all loaded action values for the given query
+   */
+  getLoadedActionValues(query:QueryResource):Promise<HalResource[]> {
+    const ids = this.getActionValueIds(query);
+
+    if (!ids.length) {
+      return Promise.resolve([]);
+    }
+
+    return Promise.all(ids.map((id) => this.require(id)));
   }
 
   /**
@@ -155,7 +178,7 @@ export abstract class BoardActionService {
    * Get action specific items that shall be shown in the list menu
    * @returns {any[]}
    */
-  getAdditionalListMenuItems(query:QueryResource):Promise<OpContextMenuItem[]> {
+  getAdditionalListMenuItems(_query:QueryResource):Promise<OpContextMenuItem[]> {
     return Promise.resolve([]);
   }
 
@@ -175,11 +198,25 @@ export abstract class BoardActionService {
     return undefined;
   }
 
+  headerComponentInputs(_query:QueryResource, resource:HalResource|undefined, _resources:HalResource[]):Record<string, unknown> {
+    return { resource };
+  }
+
+  actionBarClasses(_query:QueryResource, resource:HalResource|undefined, _resources:HalResource[]):string[] {
+    const attribute = this.filterName;
+
+    if (resource?.id) {
+      return [Highlighting.backgroundClass(attribute, resource.id)];
+    }
+
+    return [];
+  }
+
   /**
    * Get icon and text to show on the add button when it is disabled
    * @returns {the icon class or nothing}
    */
-  disabledAddButtonPlaceholder(resource?:HalResource):DisabledButtonPlaceholder|undefined {
+  disabledAddButtonPlaceholder(_resource?:HalResource):DisabledButtonPlaceholder|undefined {
     return undefined;
   }
 
@@ -187,7 +224,7 @@ export abstract class BoardActionService {
    * Determines the specific warning to be shown, when there are no options to add as a list
    * @returns {the text or nothing}
    */
-  warningTextWhenNoOptionsAvailable(hasMember?:boolean):Promise<string|undefined> {
+  warningTextWhenNoOptionsAvailable(_hasMember?:boolean):Promise<string|undefined> {
     return Promise.resolve(undefined);
   }
 
@@ -198,14 +235,14 @@ export abstract class BoardActionService {
    * @param query
    * @param value
    */
-  dragIntoAllowed(query:QueryResource, value:HalResource|undefined):boolean {
+  dragIntoAllowed(_query:QueryResource, _value:HalResource|undefined):boolean {
     return true;
   }
 
   /**
    * Determine whether we can create new items for this action attribute
    */
-  canAddToQuery(query:QueryResource):Promise<boolean> {
+  canAddToQuery(_query:QueryResource):Promise<boolean> {
     return Promise.resolve(true);
   }
 

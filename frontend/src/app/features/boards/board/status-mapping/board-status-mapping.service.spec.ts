@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import {
+  of,
+  throwError,
+} from 'rxjs';
 import { BoardStatusMappingService } from './board-status-mapping.service';
 import { BoardActionsRegistryService } from 'core-app/features/boards/board/board-actions/board-actions-registry.service';
 import { BoardService } from 'core-app/features/boards/board/board.service';
@@ -27,6 +30,11 @@ describe('BoardStatusMappingService', () => {
   let fakeWidget:{ options:{ queryId:string; filters:unknown[] } };
   let fakeBoard:Board;
 
+  const flushPromises = async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  };
+
   beforeEach(() => {
     fakeActionService = {
       loadAvailable: jasmine.createSpy('loadAvailable').and.returnValue(of(fakeStatuses)),
@@ -39,9 +47,13 @@ describe('BoardStatusMappingService', () => {
     boardService = jasmine.createSpyObj<BoardService>('BoardService', ['save']);
     i18n = jasmine.createSpyObj<I18nService>('I18nService', ['t']);
     halNotification = jasmine.createSpyObj<HalResourceNotificationService>('HalResourceNotificationService', ['handleRawError']);
-    i18n.t.and.callFake((key:string, options?:{ column?:string }) => {
+    i18n.t.and.callFake((key:string) => {
       if (key === 'js.boards.lists.status_mapping.dialog_title') {
-        return `Configure: ${options?.column ?? '[missing]'}`;
+        return 'Configure column';
+      }
+
+      if (key === 'js.boards.lists.status_mapping.dialog_subtitle') {
+        return 'Select the statuses to include in this column';
       }
 
       return key;
@@ -84,7 +96,8 @@ describe('BoardStatusMappingService', () => {
     const props = openDialogSpy.calls.mostRecent().args[1];
 
     expect(props.currentFilterValues).toEqual(['1']);
-    expect(props.title).toEqual('Configure: New');
+    expect(props.title).toEqual('Configure column');
+    expect(props.subtitle).toEqual('Select the statuses to include in this column');
     expect(props.placeholder).toEqual('js.boards.lists.status_mapping.filter_placeholder');
     expect(props.noSelectionNotice).toEqual('js.boards.lists.status_mapping.no_selection_notice');
   });
@@ -113,6 +126,7 @@ describe('BoardStatusMappingService', () => {
     const originalFilters = fakeWidget.options.filters;
 
     await service.openDialog(fakeBoard, fakeWidget as unknown as GridWidgetResource, () => { /* noop */ });
+    await flushPromises();
 
     expect(fakeWidget.options.filters).toBe(originalFilters);
     // eslint-disable-next-line @typescript-eslint/unbound-method

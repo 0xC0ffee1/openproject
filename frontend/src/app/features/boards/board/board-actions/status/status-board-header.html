@@ -1,9 +1,22 @@
-@if (status) {
+@if (title || statuses.length) {
   <div class="op-status-board-header">
     <h2 class="editable-toolbar-title--fixed">
-      <small [textContent]="text.status"></small>
-      <br/>
-      {{ status.name }}
+      {{ title }}
     </h2>
+    @if (statuses.length) {
+      <div class="op-status-board-header--meta">
+        <small class="f6"
+          [textContent]="text.status"></small>
+        <div class="op-status-board-header--statuses">
+          @for (mappedStatus of statuses; track mappedStatus.id) {
+            <span
+              class="op-status-board-header--status f6"
+              [ngClass]="statusClass(mappedStatus)"
+              [textContent]="mappedStatus.name">
+            </span>
+          }
+        </div>
+      </div>
+    }
   </div>
 }

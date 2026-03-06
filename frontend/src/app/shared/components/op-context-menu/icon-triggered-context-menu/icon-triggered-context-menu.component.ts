@@ -57,6 +57,8 @@ export class IconTriggeredContextMenuComponent extends OpContextMenuTrigger {
 
   @Input() menuItemsFactory:() => Promise<OpContextMenuItem[]>;
   @Input() customAriaLabel:string = this.I18n.t('js.label_open_menu');
+  @Input() dataTestSelector:string|null = null;
+  @Input() dataTourSelector:string|null = null;
 
   protected async open(evt:Event) {
     this.items = await this.buildItems();

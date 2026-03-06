@@ -4,3 +4,22 @@
 
     .editable-toolbar-title--fixed
         @include board-header-editable-toolbar-title
+
+    &--meta
+        margin-top: 0.125rem
+
+        small
+            display: block
+            margin-bottom: 0.125rem
+
+    &--statuses
+        display: flex
+        flex-wrap: nowrap
+        gap: 0.125rem 0.5rem
+        line-height: 1.25
+        overflow: hidden
+
+    &--status
+        white-space: nowrap
+        flex: 0 1 auto
+        min-width: 0

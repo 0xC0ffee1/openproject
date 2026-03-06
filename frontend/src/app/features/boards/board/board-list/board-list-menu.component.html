@@ -1,5 +1,7 @@
-@if (canDelete()) {
+@if (shouldShowMenu) {
   <ng-container class="board-list--more-menu">
-    <icon-triggered-context-menu [menuItemsFactory]="menuItems" />
+    <icon-triggered-context-menu [menuItemsFactory]="menuItems"
+      [dataTestSelector]="showAddActions ? 'op-board-list--card-dropdown-add-button' : null"
+      [dataTourSelector]="showAddActions ? 'op-board-list--card-dropdown-add-button' : null" />
   </ng-container>
 }

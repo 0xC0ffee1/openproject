@@ -9,13 +9,19 @@
       <div
         class="op-board-list--action-bar"
         [ngClass]="actionResourceClass">
+        @for (actionBarClass of actionBarClasses; track actionBarClass) {
+          <span
+            class="op-board-list--action-bar-segment"
+            [ngClass]="actionBarClass">
+          </span>
+        }
       </div>
     }
     <div class="op-board-list--header"
       data-test-selector="op-board-list--header">
       @if (headerComponent) {
         <ndc-dynamic [ndcDynamicComponent]="headerComponent"
-          [ndcDynamicInputs]="{ resource: actionResource }" />
+          [ndcDynamicInputs]="headerComponentInputs" />
       }
       <h3 class="toolbar-title--container">
         @if (!headerComponent) {
@@ -32,22 +38,11 @@
         data-test-selector="op-board-list--menu"
         [board]="board"
         [resource]="resource"
+        [showAddActions]="showAddButton"
         (onRemove)="deleteList()"
         (onReload)="updateQuery(true)" />
     </div>
-    <div class="op-board-list--query-container drop-zone"
-      [ngClass]="{ '-with-create-button': board.isAction || showAddButton }">
-      <div class="op-board-list--button-container">
-        @if (showAddButton) {
-          <button [title]="text.addCard"
-            data-test-selector="op-board-list--card-dropdown-add-button"
-            data-tour-selector="op-board-list--card-dropdown-add-button"
-            class="op-board-list--add-button op-board-list--card-dropdown-button button"
-            op-addCardDropdown>
-            <op-icon icon-classes="icon-small icon-add" />
-          </button>
-        }
-      </div>
+    <div class="op-board-list--query-container drop-zone">
       <wp-card-view [dragOutOfHandler]="canDragOutOfHandler"
         [dragInto]="canDragInto"
         [workPackageAddedHandler]="workPackageAddedHandler"

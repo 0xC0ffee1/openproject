@@ -23,7 +23,6 @@ import { ToastService } from 'core-app/shared/components/toaster/toast.service';
 import { IsolatedQuerySpace } from 'core-app/features/work-packages/directives/query-space/isolated-query-space';
 import { Board } from 'core-app/features/boards/board/board';
 import { AuthorisationService } from 'core-app/core/model-auth/model-auth.service';
-import { Highlighting } from 'core-app/features/work-packages/components/wp-fast-table/builders/highlighting/highlighting.functions';
 import { WorkPackageCardViewComponent } from 'core-app/features/work-packages/components/wp-card-view/wp-card-view.component';
 import { WorkPackageStatesInitializationService } from 'core-app/features/work-packages/components/wp-list/wp-states-initialization.service';
 import { BoardService } from 'core-app/features/boards/board/board.service';
@@ -112,7 +111,11 @@ export class BoardListComponent extends AbstractWidgetComponent implements OnIni
 
   public actionResourceClass = '';
 
+  public actionBarClasses:string[] = [];
+
   public headerComponent:ComponentType<unknown>|undefined;
+
+  public headerComponentInputs:Record<string, unknown> = {};
 
   /** Rename inFlight */
   public inFlight:boolean;
@@ -309,14 +312,6 @@ export class BoardListComponent extends AbstractWidgetComponent implements OnIni
       );
   }
 
-  private boardListActionColorClass(value?:HalResource):string {
-    const attribute = this.board.actionAttribute!;
-    if (value?.id) {
-      return Highlighting.backgroundClass(attribute, value.id);
-    }
-    return '';
-  }
-
   public get listName() {
     return this.query && this.query.name;
   }
@@ -340,7 +335,10 @@ export class BoardListComponent extends AbstractWidgetComponent implements OnIni
   private async loadActionAttribute(query:QueryResource):Promise<void> {
     if (!this.board.isAction) {
       this.actionResource = undefined;
+      this.actionBarClasses = [];
+      this.actionResourceClass = '';
       this.headerComponent = undefined;
+      this.headerComponentInputs = {};
       this.canDragInto = !!query.updateOrderedWorkPackages;
       const canAdd = await this.canAdd;
       this.showAddButton = this.canDragInto && canAdd;
@@ -348,21 +346,18 @@ export class BoardListComponent extends AbstractWidgetComponent implements OnIni
     }
 
     const actionService = this.actionService!;
-    const id = actionService.getActionValueId(query);
-
-    // Test if we loaded the resource already
-    if (this.actionResource && id === this.actionResource.href) {
-      return;
-    }
 
     // Load the resource
     return actionService
       .getLoadedActionValue(query)
       .then(async (resource) => {
+        const resources = await actionService.getLoadedActionValues(query);
         this.actionResource = resource;
         this.headerComponent = actionService.headerComponent();
+        this.headerComponentInputs = actionService.headerComponentInputs(query, resource, resources);
         this.buttonPlaceholder = actionService.disabledAddButtonPlaceholder(resource);
-        this.actionResourceClass = this.boardListActionColorClass(resource);
+        this.actionBarClasses = actionService.actionBarClasses(query, resource, resources);
+        this.actionResourceClass = this.actionBarClasses[0] ?? '';
         this.canDragInto = actionService.dragIntoAllowed(query, resource);
 
         const canWriteAttribute = await actionService.canAddToQuery(query);

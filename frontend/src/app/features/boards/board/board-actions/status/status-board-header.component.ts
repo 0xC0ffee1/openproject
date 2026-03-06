@@ -25,23 +25,42 @@
 //
 // See COPYRIGHT and LICENSE files for more details.
 //++
-import { Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+} from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import { StatusResource } from 'core-app/features/hal/resources/status-resource';
+import { QueryResource } from 'core-app/features/hal/resources/query-resource';
+import { Highlighting } from 'core-app/features/work-packages/components/wp-fast-table/builders/highlighting/highlighting.functions';
 
 @Component({
   templateUrl: './status-board-header.html',
   styleUrls: ['./status-board-header.sass'],
   host: { class: 'title-container -small' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
 export class StatusBoardHeaderComponent {
-  @Input('resource') public status:StatusResource;
+  private readonly I18n = inject(I18nService);
+
+  @Input() public resource:StatusResource;
+
+  @Input() public query:QueryResource;
+
+  @Input() public statuses:StatusResource[] = [];
 
   text = {
     status: this.I18n.t('js.work_packages.properties.status'),
   };
 
-  constructor(readonly I18n:I18nService) {
+  get title():string {
+    return this.query?.name ?? this.resource?.name ?? '';
+  }
+
+  statusClass(status:StatusResource):string {
+    return status.id ? Highlighting.inlineClass('status', status.id) : '';
   }
 }
