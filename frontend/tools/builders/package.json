@@ -1,0 +1,6 @@
+{
+  "name": "@openproject/frontend-builders",
+  "version": "0.1.0",
+  "private": true,
+  "builders": "./builders.json"
+}

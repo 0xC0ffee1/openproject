@@ -149,7 +149,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@openproject/frontend-builders:karma-primer-css",
           "options": {
             "preserveSymlinks": true,
             "main": "src/test.ts",

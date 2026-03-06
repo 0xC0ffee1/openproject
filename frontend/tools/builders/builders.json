@@ -1,0 +1,9 @@
+{
+  "builders": {
+    "karma-primer-css": {
+      "implementation": "./karma-primer-css/index.cjs",
+      "schema": "./karma-primer-css/schema.json",
+      "description": "Karma builder with Primer React CSS support"
+    }
+  }
+}

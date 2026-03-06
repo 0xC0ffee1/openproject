@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@openproject/frontend-builders": "file:tools/builders",
     "@angular-builders/custom-esbuild": "^21.0.3",
     "@angular-devkit/build-angular": "^21.1.5",
     "@angular-eslint/builder": "20.7.0",
