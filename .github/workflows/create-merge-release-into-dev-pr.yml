@@ -99,8 +99,23 @@ jobs:
               )
 
               TEMP_BRANCH="merge-$RELEASE_BRANCH-$(date "+%Y%m%d%H%M%S")"
+              merge_note=""
 
-              git branch "$TEMP_BRANCH" "$RELEASE_BRANCH"
+              git switch -c "$TEMP_BRANCH" "$RELEASE_BRANCH"
+
+              if git merge --no-edit --no-ff "$BASE_BRANCH"; then
+                merge_note=$'> [!NOTE]\n> CI prepared the merge of '"$BASE_BRANCH"' into '"$RELEASE_BRANCH"$'.'
+              else
+                script/i18n/merge_generated_locale_conflicts
+
+                if git diff --name-only --diff-filter=U | grep -q .; then
+                  git merge --abort
+                  merge_note=$'> [!NOTE]\n> Generated locale conflicts were auto-resolved only when a three-way YAML merge was safe. This branch still needs manual conflict resolution.'
+                else
+                  git commit --no-edit
+                  merge_note=$'> [!NOTE]\n> Generated locale conflicts under crowdin paths were automatically resolved using a safe three-way YAML merge.'
+                fi
+              fi
 
               git push origin "$TEMP_BRANCH"
 
@@ -108,7 +123,7 @@ jobs:
                 --base "$BASE_BRANCH" \
                 --head "$TEMP_BRANCH" \
                 --title "Merge $RELEASE_BRANCH into $BASE_BRANCH" \
-                --body "$pr_body" \
+                --body "$merge_note"$'\n\n'"$pr_body" \
                 --label create-merge-release-into-dev-pr
               echo "Created a PR to merge $RELEASE_BRANCH ($TEMP_BRANCH) into $BASE_BRANCH"
             fi
