@@ -270,10 +270,49 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
           es:
             date:
               order:
-              - ":año"
-              - :mes
-              - ":día"
+                - ':año'
+                - :mes
+                - ':día'
         YAML
+        expect(git).to have_received(:add).with(generated_path)
+        expect(result.resolved_files).to eq([generated_path])
+        expect(result.remaining_unresolved_files).to eq([])
+      end
+    end
+
+    context "when the merged content matches dev exactly" do
+      let(:conflicted_files) { [generated_path] }
+      let(:theirs_yaml) do
+        <<~YAML
+          # a preserved comment
+          ---
+          es:
+            title: "Dev value"
+            description: >
+              Wrapped text
+        YAML
+      end
+
+      before do
+        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            title: Old value
+            description: Wrapped text
+        YAML
+        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            title: Release value
+            description: Wrapped text
+        YAML
+        allow(git).to receive(:show).with(3, generated_path).and_return(theirs_yaml)
+      end
+
+      it "writes the raw dev YAML instead of reserializing" do
+        result = merger.call
+
+        expect(file_writer).to have_received(:write).with(generated_path, theirs_yaml)
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
         expect(result.remaining_unresolved_files).to eq([])

@@ -33,6 +33,7 @@ require "yaml"
 
 module OpenProject
   class GeneratedLocaleConflictMerger
+    StageContent = Data.define(:raw, :parsed)
     Result = Data.define(:resolved_files, :remaining_unresolved_files)
 
     GENERATED_LOCALE_PATTERNS = [
@@ -89,35 +90,50 @@ module OpenProject
     end
 
     def merge_file(path)
+      base, ours, theirs = load_stages(path)
+
       merged = merge_value(
-        load_yaml(1, path),
-        load_yaml(2, path),
-        load_yaml(3, path),
+        base.parsed,
+        ours.parsed,
+        theirs.parsed,
         path:
       )
 
       raise "no merged content produced" if merged.equal?(MISSING)
 
-      file_writer.write(path, YAML.dump(merged))
+      write_merged_file(path, merged, base:, ours:, theirs:)
+    end
+
+    def load_stage(stage, path)
+      git.show(stage, path).then do |contents|
+        StageContent.new(
+          raw: contents,
+          parsed: YAML.safe_load(contents, permitted_classes: [Symbol], aliases: true) || {}
+        )
+      end
+    rescue Psych::SyntaxError => e
+      raise "invalid YAML in stage #{stage}: #{e.message}"
+    rescue Git::MissingStageEntry
+      StageContent.new(raw: nil, parsed: MISSING)
+    end
+
+    def load_stages(path)
+      [1, 2, 3].map { |stage| load_stage(stage, path) }
+    end
+
+    def write_merged_file(path, merged, base:, ours:, theirs:)
+      file_writer.write(path, raw_yaml_for(merged, base:, ours:, theirs:) || YAML.dump(merged))
       git.add(path)
       out.puts "Auto-resolved #{path}"
       path
     end
 
-<<<<<<< HEAD
-    def load_yaml(stage, path)
-      git.show(stage, path).then do |contents|
-        YAML.safe_load(contents, permitted_classes: [Symbol], aliases: true) || {}
-=======
     def raw_yaml_for(merged, base:, ours:, theirs:)
       [theirs, ours, base].each do |stage|
         return stage.raw if !missing?(stage.parsed) && merged == stage.parsed
->>>>>>> 3f24d4348f2 (fixup! [#72881] Fix generated locale conflict merger)
       end
-    rescue Psych::SyntaxError => e
-      raise "invalid YAML in stage #{stage}: #{e.message}"
-    rescue Git::MissingStageEntry
-      MISSING
+
+      nil
     end
 
     def merge_value(base, ours, theirs, path:)
@@ -179,11 +195,19 @@ module OpenProject
         system("git", "add", "--", path, exception: true)
       end
 
+      def rm(path)
+        system("git", "rm", "--", path, exception: true)
+      end
+
       private
 
       def capture!(*command)
         stdout, status = Open3.capture2e(*command)
-        raise "command failed: #{command.join(' ')}" unless status.success?
+        unless status.success?
+          message = "command failed: #{command.join(' ')}"
+          message << "\n\nOutput:\n#{stdout}" unless stdout.strip.empty?
+          raise message
+        end
 
         stdout
       end
