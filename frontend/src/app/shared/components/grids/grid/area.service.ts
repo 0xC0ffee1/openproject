@@ -13,6 +13,17 @@ import { ApiV3Service } from 'core-app/core/apiv3/api-v3.service';
 import { ApiV3GridForm } from 'core-app/core/apiv3/endpoints/grids/apiv3-grid-form';
 import { map } from 'rxjs/operators';
 
+interface GridWidgetPayload {
+  id:string;
+  [key:string]:unknown;
+}
+
+interface GridPatchPayload {
+  id:string;
+  widgets?:GridWidgetPayload[];
+  [key:string]:unknown;
+}
+
 @Injectable()
 export class GridAreaService {
   private resource:GridResource;
@@ -118,13 +129,23 @@ export class GridAreaService {
   }
 
   public saveWidgetChangeset(changeset:WidgetChangeset):Promise<GridResource> {
-    const payload:any = ApiV3GridForm.extractPayload(this.resource, this.schema);
+    const payload = ApiV3GridForm.extractPayload(this.resource, this.schema) as GridPatchPayload;
+    const gridId = this.resource.id;
 
-    const payloadWidget = payload.widgets.find((w:any) => w.id === changeset.pristineResource.id);
+    const payloadWidget = payload.widgets?.find((widget) => widget.id === changeset.pristineResource.id);
+
+    if (!payloadWidget) {
+      throw new Error(`Missing widget payload for ${changeset.pristineResource.id}`);
+    }
+
+    if (!gridId) {
+      throw new Error('Missing grid id');
+    }
+
     Object.assign(payloadWidget, changeset.changes);
 
     // Adding the id so that the url can be deduced
-    payload.id = this.resource.id;
+    payload.id = gridId;
 
     return this.saveGrid(payload);
   }
@@ -157,7 +178,7 @@ export class GridAreaService {
     }
   }
 
-  private async saveGrid(resource:GridResource, schema?:SchemaResource):Promise<GridResource> {
+  private async saveGrid(resource:GridResource|GridPatchPayload, schema?:SchemaResource):Promise<GridResource> {
     const subscription = this
       .apiV3Service
       .grids
