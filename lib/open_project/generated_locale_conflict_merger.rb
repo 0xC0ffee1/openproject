@@ -99,13 +99,17 @@ module OpenProject
         path:
       )
 
-      raise "no merged content produced" if merged.equal?(MISSING)
+      if missing?(merged)
+        git.rm(path)
+        out.puts "Auto-removed #{path}"
+        return path
+      end
 
       write_merged_file(path, merged, base:, ours:, theirs:)
     end
 
     def load_stage(stage, path)
-      git.show(stage, path).then do |contents|
+      git.cat_file(stage, path).then do |contents|
         StageContent.new(
           raw: contents,
           parsed: YAML.safe_load(contents, permitted_classes: [Symbol], aliases: true) || {}
@@ -118,7 +122,7 @@ module OpenProject
     end
 
     def load_stages(path)
-      [1, 2, 3].map { |stage| load_stage(stage, path) }
+      (1..3).map { |stage| load_stage(stage, path) }
     end
 
     def write_merged_file(path, merged, base:, ours:, theirs:)
@@ -157,13 +161,17 @@ module OpenProject
     end
 
     def merge_hash(base, ours, theirs, path:)
-      hashes = [base, ours, theirs].map { |value| missing?(value) ? {} : value }
+      base, ours, theirs = [base, ours, theirs].map { |value| missing?(value) ? {} : value }
 
-      hashes.flat_map(&:keys).uniq.each_with_object({}) do |key, merged|
+      merge_hash_entries(base, ours, theirs, path)
+    end
+
+    def merge_hash_entries(base, ours, theirs, path)
+      (base.keys + ours.keys + theirs.keys).uniq.each_with_object({}) do |key, merged|
         merged_value = merge_value(
-          hashes[0].fetch(key, MISSING),
-          hashes[1].fetch(key, MISSING),
-          hashes[2].fetch(key, MISSING),
+          base.fetch(key, MISSING),
+          ours.fetch(key, MISSING),
+          theirs.fetch(key, MISSING),
           path: "#{path}.#{key}"
         )
 
@@ -186,7 +194,7 @@ module OpenProject
         capture!("git", "diff", "--name-only", "--diff-filter=U").lines.map(&:strip).reject(&:empty?)
       end
 
-      def show(stage, path)
+      def cat_file(stage, path)
         object_id = stage_object_id(stage, path)
         capture!("git", "cat-file", "blob", object_id)
       end

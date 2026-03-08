@@ -53,6 +53,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       allow(git).to receive(:conflicted_files).and_return(conflicted_files)
       allow(file_writer).to receive(:write)
       allow(git).to receive(:add)
+      allow(git).to receive(:rm)
     end
 
     context "when there are no conflicted files" do
@@ -82,17 +83,17 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Old
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Old
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             title: New
@@ -113,19 +114,19 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             first: Old first
             second: Old second
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             first: New first
             second: Old second
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             first: Old first
@@ -149,17 +150,17 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Old
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Release value
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Dev value
@@ -184,9 +185,9 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return("---\nes:\n  title: Old\n")
-        allow(git).to receive(:show).with(2, generated_path).and_return("---\nes:\n  title: [broken\n")
-        allow(git).to receive(:show).with(3, generated_path).and_return("---\nes:\n  title: New\n")
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return("---\nes:\n  title: Old\n")
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return("---\nes:\n  title: [broken\n")
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return("---\nes:\n  title: New\n")
       end
 
       it "leaves the file unresolved" do
@@ -201,18 +202,18 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             keep: Keep
             remove_me: Remove me
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             keep: Keep
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             keep: Keep
@@ -231,11 +232,40 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       end
     end
 
+    context "when deletion is the resolved outcome" do
+      let(:conflicted_files) { [generated_path] }
+
+      before do
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            remove_me: Remove me
+        YAML
+        allow(git).to receive(:cat_file).with(2, generated_path)
+                                  .and_raise(described_class::Git::MissingStageEntry, "missing stage 2")
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            remove_me: Remove me
+        YAML
+      end
+
+      it "removes the file and stages the deletion" do
+        result = merger.call
+
+        expect(file_writer).not_to have_received(:write)
+        expect(git).not_to have_received(:add)
+        expect(git).to have_received(:rm).with(generated_path)
+        expect(result.resolved_files).to eq([generated_path])
+        expect(result.remaining_unresolved_files).to eq([])
+      end
+    end
+
     context "when a generated locale file contains symbol values" do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             date:
@@ -243,7 +273,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
                 - ':año'
                 - :mes
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             date:
@@ -251,7 +281,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
                 - ':año'
                 - :mes
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             date:
@@ -294,19 +324,19 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       end
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Old value
             description: Wrapped text
         YAML
-        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
           ---
           es:
             title: Release value
             description: Wrapped text
         YAML
-        allow(git).to receive(:show).with(3, generated_path).and_return(theirs_yaml)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(theirs_yaml)
       end
 
       it "writes the raw dev YAML instead of reserializing" do
@@ -323,11 +353,11 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path)
+        allow(git).to receive(:cat_file).with(1, generated_path)
                                   .and_raise(described_class::Git::MissingStageEntry, "missing stage 1")
-        allow(git).to receive(:show).with(2, generated_path)
+        allow(git).to receive(:cat_file).with(2, generated_path)
                                   .and_raise(described_class::Git::MissingStageEntry, "missing stage 2")
-        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
           ---
           es:
             added: true
@@ -346,9 +376,9 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:conflicted_files) { [generated_path, other_path] }
 
       before do
-        allow(git).to receive(:show).with(1, generated_path).and_return("---\nes:\n  title: Old\n")
-        allow(git).to receive(:show).with(2, generated_path).and_return("---\nes:\n  title: Old\n")
-        allow(git).to receive(:show).with(3, generated_path).and_return("---\nes:\n  title: New\n")
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return("---\nes:\n  title: Old\n")
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return("---\nes:\n  title: Old\n")
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return("---\nes:\n  title: New\n")
       end
 
       it "resolves only the generated file" do

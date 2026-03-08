@@ -48,6 +48,9 @@ jobs:
         with:
           ref: ${{ env.BASE_BRANCH }}
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+
       - name: Fetch dev branch upto release branch
         run: git fetch --shallow-exclude "$RELEASE_BRANCH" origin "$BASE_BRANCH" || git fetch --depth 1 origin "$BASE_BRANCH"
 
@@ -99,22 +102,26 @@ jobs:
               )
 
               TEMP_BRANCH="merge-$RELEASE_BRANCH-$(date "+%Y%m%d%H%M%S")"
-              merge_note=""
 
               git switch -c "$TEMP_BRANCH" "$RELEASE_BRANCH"
 
-              if git merge --no-edit --no-ff "$BASE_BRANCH"; then
-                merge_note=$'> [!NOTE]\n> CI prepared the merge of '"$BASE_BRANCH"' into '"$RELEASE_BRANCH"$'.'
-              else
-                script/i18n/merge_generated_locale_conflicts
-
-                if git diff --name-only --diff-filter=U | grep -q .; then
-                  git merge --abort
-                  merge_note=$'> [!NOTE]\n> Generated locale conflicts were auto-resolved where possible, but this branch still needs manual conflict resolution.'
-                else
+              if ! git merge --no-edit --no-ff "$BASE_BRANCH"; then
+                if script/i18n/merge_generated_locale_conflicts; then
                   git commit --no-edit
                   merge_note=$'> [!NOTE]\n> Generated locale conflicts under crowdin paths were automatically resolved using a three-way YAML merge that prefers the dev side for conflicting leaf values.'
+                else
+                  merge_status=$?
+                  if [ "$merge_status" -eq 2 ]; then
+                    git merge --abort
+                    merge_note=$'> [!WARNING]\n> Generated locale conflicts were auto-resolved where possible, but this branch still needs manual conflict resolution.'
+                  else
+                    exit "$merge_status"
+                  fi
                 fi
+              fi
+
+              if [ -n "${merge_note:-}" ]; then
+                pr_body="$merge_note"$'\n\n'"$pr_body"
               fi
 
               git push origin "$TEMP_BRANCH"
@@ -123,7 +130,7 @@ jobs:
                 --base "$BASE_BRANCH" \
                 --head "$TEMP_BRANCH" \
                 --title "Merge $RELEASE_BRANCH into $BASE_BRANCH" \
-                --body "$merge_note"$'\n\n'"$pr_body" \
+                --body "$pr_body" \
                 --label create-merge-release-into-dev-pr
               echo "Created a PR to merge $RELEASE_BRANCH ($TEMP_BRANCH) into $BASE_BRANCH"
             fi
