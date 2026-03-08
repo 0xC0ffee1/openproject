@@ -71,15 +71,14 @@ export class WpTableConfigurationRelationSelectorComponent implements OnInit {
   }
 
   ngOnInit() {
-    const self:WpTableConfigurationRelationSelectorComponent = this;
+    void this.initializeRelationFilters();
+  }
 
-    this.wpTableFilters
-      .onReady()
-      .then(() => {
-        self.availableRelationFilters = self.relationFiltersOf(self.wpTableFilters.availableFilters) as QueryFilterResource[];
-        self.setSelectedRelationFilter();
-        self.cdRef.markForCheck();
-      });
+  private async initializeRelationFilters():Promise<void> {
+    await this.wpTableFilters.onReady();
+    this.availableRelationFilters = this.relationFiltersOf(this.wpTableFilters.availableFilters) as QueryFilterResource[];
+    this.setSelectedRelationFilter();
+    this.cdRef.markForCheck();
   }
 
   private setSelectedRelationFilter():void {
