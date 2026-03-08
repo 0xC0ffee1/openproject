@@ -110,10 +110,10 @@ jobs:
 
                 if git diff --name-only --diff-filter=U | grep -q .; then
                   git merge --abort
-                  merge_note=$'> [!NOTE]\n> Generated locale conflicts were auto-resolved only when a three-way YAML merge was safe. This branch still needs manual conflict resolution.'
+                  merge_note=$'> [!NOTE]\n> Generated locale conflicts were auto-resolved where possible, but this branch still needs manual conflict resolution.'
                 else
                   git commit --no-edit
-                  merge_note=$'> [!NOTE]\n> Generated locale conflicts under crowdin paths were automatically resolved using a safe three-way YAML merge.'
+                  merge_note=$'> [!NOTE]\n> Generated locale conflicts under crowdin paths were automatically resolved using a three-way YAML merge that prefers the dev side for conflicting leaf values.'
                 fi
               fi
 

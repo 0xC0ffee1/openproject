@@ -166,14 +166,17 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         YAML
       end
 
-      it "leaves the file unresolved" do
+      it "prefers the dev side and stages the file" do
         result = merger.call
 
-        expect(file_writer).not_to have_received(:write)
-        expect(git).not_to have_received(:add)
-        expect(result.resolved_files).to eq([])
-        expect(result.remaining_unresolved_files).to eq([generated_path])
-        expect(stderr.string).to include("Leaving #{generated_path} unresolved")
+        expect(file_writer).to have_received(:write).with(generated_path, <<~YAML)
+          ---
+          es:
+            title: Dev value
+        YAML
+        expect(git).to have_received(:add).with(generated_path)
+        expect(result.resolved_files).to eq([generated_path])
+        expect(result.remaining_unresolved_files).to eq([])
       end
     end
 
@@ -225,6 +228,55 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
           es:
             keep: Keep
         YAML
+      end
+    end
+
+    context "when a generated locale file contains symbol values" do
+      let(:conflicted_files) { [generated_path] }
+
+      before do
+        allow(git).to receive(:show).with(1, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            date:
+              order:
+                - ':año'
+                - :mes
+        YAML
+        allow(git).to receive(:show).with(2, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            date:
+              order:
+                - ':año'
+                - :mes
+        YAML
+        allow(git).to receive(:show).with(3, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            date:
+              order:
+                - ':año'
+                - :mes
+                - ':día'
+        YAML
+      end
+
+      it "permits Symbol and writes the merged content" do
+        result = merger.call
+
+        expect(file_writer).to have_received(:write).with(generated_path, <<~YAML)
+          ---
+          es:
+            date:
+              order:
+              - ":año"
+              - :mes
+              - ":día"
+        YAML
+        expect(git).to have_received(:add).with(generated_path)
+        expect(result.resolved_files).to eq([generated_path])
+        expect(result.remaining_unresolved_files).to eq([])
       end
     end
 

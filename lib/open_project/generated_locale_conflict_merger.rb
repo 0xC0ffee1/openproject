@@ -104,9 +104,15 @@ module OpenProject
       path
     end
 
+<<<<<<< HEAD
     def load_yaml(stage, path)
       git.show(stage, path).then do |contents|
-        YAML.safe_load(contents, aliases: true) || {}
+        YAML.safe_load(contents, permitted_classes: [Symbol], aliases: true) || {}
+=======
+    def raw_yaml_for(merged, base:, ours:, theirs:)
+      [theirs, ours, base].each do |stage|
+        return stage.raw if !missing?(stage.parsed) && merged == stage.parsed
+>>>>>>> 3f24d4348f2 (fixup! [#72881] Fix generated locale conflict merger)
       end
     rescue Psych::SyntaxError => e
       raise "invalid YAML in stage #{stage}: #{e.message}"
@@ -118,65 +124,39 @@ module OpenProject
       resolution = resolve_without_recursion(base, ours, theirs)
       return resolution unless resolution.equal?(UNDECIDED)
 
-      if hash_like?(base) && hash_like?(ours) && hash_like?(theirs)
+      if recursive_hash_merge?(base, ours, theirs)
         merge_hash(base, ours, theirs, path:)
       else
-        raise "conflicting scalar values at #{path}"
+        theirs
       end
     end
 
     def resolve_without_recursion(base, ours, theirs)
       return MISSING if missing?(ours) && missing?(theirs)
-      return theirs if equal_value?(ours, base)
-      return ours if equal_value?(theirs, base)
-      return ours if equal_value?(ours, theirs)
+      return theirs if ours == base
+      return ours if theirs == base
+      return ours if ours == theirs
 
       UNDECIDED
     end
 
     def merge_hash(base, ours, theirs, path:)
-      base_hash = unwrap_hash(base)
-      ours_hash = unwrap_hash(ours)
-      theirs_hash = unwrap_hash(theirs)
+      hashes = [base, ours, theirs].map { |value| missing?(value) ? {} : value }
 
-      merged_hash(base_hash, ours_hash, theirs_hash, path)
-    end
+      hashes.flat_map(&:keys).uniq.each_with_object({}) do |key, merged|
+        merged_value = merge_value(
+          hashes[0].fetch(key, MISSING),
+          hashes[1].fetch(key, MISSING),
+          hashes[2].fetch(key, MISSING),
+          path: "#{path}.#{key}"
+        )
 
-    def merged_hash(base_hash, ours_hash, theirs_hash, path)
-      merged_keys(base_hash, ours_hash, theirs_hash).each_with_object({}) do |key, merged|
-        merge_hash_key(base_hash, ours_hash, theirs_hash, path, key, merged)
+        merged[key] = merged_value unless missing?(merged_value)
       end
     end
 
-    def merged_keys(base_hash, ours_hash, theirs_hash)
-      (base_hash.keys + ours_hash.keys + theirs_hash.keys).uniq
-    end
-
-    def merge_hash_key(base_hash, ours_hash, theirs_hash, path, key, merged)
-      merged_value = merge_value(
-        fetch(base_hash, key),
-        fetch(ours_hash, key),
-        fetch(theirs_hash, key),
-        path: "#{path}.#{key}"
-      )
-
-      merged[key] = merged_value unless missing?(merged_value)
-    end
-
-    def hash_like?(value)
-      missing?(value) || value.is_a?(Hash)
-    end
-
-    def unwrap_hash(value)
-      missing?(value) ? {} : value
-    end
-
-    def fetch(hash, key)
-      hash.key?(key) ? hash[key] : MISSING
-    end
-
-    def equal_value?(left, right)
-      left == right || (missing?(left) && missing?(right))
+    def recursive_hash_merge?(base, ours, theirs)
+      [base, ours, theirs].all? { |value| missing?(value) || value.is_a?(Hash) }
     end
 
     def missing?(value)
