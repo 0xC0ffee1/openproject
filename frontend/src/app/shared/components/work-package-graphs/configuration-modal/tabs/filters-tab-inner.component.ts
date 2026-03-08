@@ -34,9 +34,9 @@ export class WpGraphConfigurationFiltersTabInnerComponent extends QuerySpacedTab
   }
 
   ngOnInit() {
-    this.initializeQuerySpace()
+    void this.initializeQuerySpace()
       .then(() => {
-        this.wpTableFilters
+        void this.wpTableFilters
           .onReady()
           .then(() => {
             this.filters = this.wpTableFilters.current;

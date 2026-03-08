@@ -59,10 +59,10 @@ export class WpGraphConfigurationSettingsTabInnerComponent extends QuerySpacedTa
   }
 
   ngOnInit() {
-    this
+    void this
       .initializeQuerySpace()
       .then(() => {
-        this.wpTableGroupBy
+        void this.wpTableGroupBy
           .onReady()
           .then(() => {
             this.initializeAvailableGroups();

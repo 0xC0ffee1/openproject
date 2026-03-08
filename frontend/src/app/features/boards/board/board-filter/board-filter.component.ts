@@ -77,7 +77,7 @@ export class BoardFilterComponent extends UntilDestroyedMixin implements AfterVi
 
         this.boardFilters.filters.putValue(filterHash);
 
-        this.$state.go('.', { query_props }, { custom: { notify: false } });
+        void this.$state.go('.', { query_props }, { custom: { notify: false } });
       });
   }
 

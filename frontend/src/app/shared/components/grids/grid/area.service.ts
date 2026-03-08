@@ -408,8 +408,7 @@ export class GridAreaService {
     index = this.widgetAreas.findIndex((area) => area.widget.id === removedWidget.id);
     this.widgetAreas.splice(index, 1);
     this.cleanupUnusedAreas();
-
-    this.rebuildAndPersist();
+    void this.rebuildAndPersist();
   }
 
   public get widgetResources() {
