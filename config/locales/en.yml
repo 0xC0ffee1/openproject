@@ -1735,6 +1735,11 @@ en:
         consented_at: "Consented at"
       group:
         identity_url: "Identity URL"
+        parent: "Parent group"
+        organizational_unit: "Organizational unit"
+      group_detail:
+        parent: "Parent group"
+        organizational_unit: "Organizational unit"
       user_preference:
         header_look_and_feel: "Look and feel"
         header_alerts: "Alerts"
