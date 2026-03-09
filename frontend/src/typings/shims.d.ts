@@ -54,6 +54,7 @@ declare module '@hotwired/turbo' {
 declare global {
   const _:typeof TLodash;
   const I18n:I18n;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const RB:any;
 }
 
@@ -64,9 +65,11 @@ declare global {
     ng2Injector:Injector;
     OpenProject:OpenProject;
     ErrorReporter:ErrorReporterBase;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onboardingTourInstance:any;
     screenfull:Screenfull;
     MiniProfiler?:{ pageTransition:() => void };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RB:any;
   }
 

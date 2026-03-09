@@ -37,18 +37,30 @@ import 'core-app/core/setup-legacy/init-jquery';
 // import 'jquery-ui/ui/widgets/tooltip';
 import 'core-vendor/jquery-ui-1.14.2/jquery-ui';
 
+interface BacklogsPreferences {
+  get:(key:string) => string | null;
+  set:(key:string, value:unknown) => void;
+}
+
+interface BacklogsNamespace {
+  UserPreferences:BacklogsPreferences;
+  Object?:unknown;
+  Factory?:unknown;
+  Dialog?:unknown;
+}
+
 // Initialize the RB namespace on window if it doesn't exist
 window.RB ??= {};
 
 // Create a global RB reference for use in this file
-const RB = window.RB;
+const RB = window.RB as BacklogsNamespace;
 
 RB.UserPreferences = {
   get(key:string) {
     return localStorage.getItem(key);
   },
 
-  set(key:string, value:any) {
+  set(key:string, value:unknown) {
     localStorage.setItem(key, String(value));
   },
 };
