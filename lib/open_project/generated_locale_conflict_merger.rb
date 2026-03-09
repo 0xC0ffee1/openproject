@@ -37,9 +37,10 @@ module OpenProject
     Result = Data.define(:resolved_files, :remaining_unresolved_files)
 
     GENERATED_LOCALE_PATTERNS = [
-      %r{\Aconfig/locales/crowdin/.+\.yml\z},
-      %r{\Amodules/[^/]+/config/locales/crowdin/.+\.yml\z}
+      "config/locales/crowdin/*.yml",
+      "modules/*/config/locales/crowdin/*.yml"
     ].freeze
+    FN_MATCH_FLAGS = File::FNM_PATHNAME | File::FNM_EXTGLOB
     MISSING = Object.new
     UNDECIDED = Object.new
 
@@ -86,7 +87,9 @@ module OpenProject
     end
 
     def generated_locale?(path)
-      GENERATED_LOCALE_PATTERNS.any? { |pattern| pattern.match?(path) }
+      GENERATED_LOCALE_PATTERNS.any? do |pattern|
+        File.fnmatch?(pattern, path, FN_MATCH_FLAGS)
+      end
     end
 
     def merge_file(path)
@@ -109,12 +112,11 @@ module OpenProject
     end
 
     def load_stage(stage, path)
-      git.cat_file(stage, path).then do |contents|
-        StageContent.new(
-          raw: contents,
-          parsed: YAML.safe_load(contents, permitted_classes: [Symbol], aliases: true) || {}
-        )
-      end
+      contents = git.cat_file(stage, path)
+      parsed = YAML.safe_load(contents, permitted_classes: [Symbol]) || {}
+      raise "expected top-level YAML mapping in stage #{stage}" unless parsed.is_a?(Hash)
+
+      StageContent.new(raw: contents, parsed:)
     rescue Psych::SyntaxError => e
       raise "invalid YAML in stage #{stage}: #{e.message}"
     rescue Git::MissingStageEntry
@@ -134,7 +136,7 @@ module OpenProject
 
     def raw_yaml_for(merged, base:, ours:, theirs:)
       [theirs, ours, base].each do |stage|
-        return stage.raw if !missing?(stage.parsed) && merged == stage.parsed
+        return stage.raw if present?(stage.parsed) && merged == stage.parsed
       end
 
       nil
@@ -187,6 +189,10 @@ module OpenProject
       value.equal?(MISSING)
     end
 
+    def present?(value)
+      !missing?(value)
+    end
+
     class Git
       class MissingStageEntry < StandardError; end
 
@@ -195,7 +201,9 @@ module OpenProject
       end
 
       def cat_file(stage, path)
-        object_id = stage_object_id(stage, path)
+        object_id = stage_object_ids(path)[stage]
+        raise MissingStageEntry, "missing stage #{stage}" if object_id.nil?
+
         capture!("git", "cat-file", "blob", object_id)
       end
 
@@ -210,26 +218,28 @@ module OpenProject
       private
 
       def capture!(*command)
-        stdout, status = Open3.capture2e(*command)
+        stdout, stderr, status = Open3.capture3(*command)
         unless status.success?
           message = "command failed: #{command.join(' ')}"
-          message << "\n\nOutput:\n#{stdout}" unless stdout.strip.empty?
+          message << "\n\nStderr:\n#{stderr}" unless stderr.strip.empty?
+          message << "\n\nStdout:\n#{stdout}" unless stdout.strip.empty?
           raise message
         end
 
         stdout
       end
 
-      def stage_object_id(stage, path)
+      def stage_object_ids(path)
+        @stage_object_ids ||= {}
+        @stage_object_ids[path] ||= load_stage_object_ids(path)
+      end
+
+      def load_stage_object_ids(path)
         output = capture!("git", "ls-files", "--stage", "--", path)
-        object_id = output.lines.filter_map do |line|
+        output.lines.each_with_object({}) do |line, ids|
           _mode, sha, line_stage, _path = line.split(/\s+/, 4)
-          sha if line_stage == stage.to_s
-        end.first
-
-        raise MissingStageEntry, "missing stage #{stage}" if object_id.nil?
-
-        object_id
+          ids[line_stage.to_i] = sha
+        end
       end
     end
   end

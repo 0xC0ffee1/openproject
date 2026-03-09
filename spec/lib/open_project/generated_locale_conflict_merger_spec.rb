@@ -198,6 +198,23 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       end
     end
 
+    context "when a generated locale file has a non-hash top level value" do
+      let(:conflicted_files) { [generated_path] }
+
+      before do
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return("---\n- item\n")
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return("---\n- item\n")
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return("---\n- item\n")
+      end
+
+      it "leaves the file unresolved" do
+        result = merger.call
+
+        expect(result.remaining_unresolved_files).to eq([generated_path])
+        expect(stderr.string).to include("expected top-level YAML mapping")
+      end
+    end
+
     context "when a key was removed on one side only" do
       let(:conflicted_files) { [generated_path] }
 
@@ -386,6 +403,81 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
 
         expect(result.resolved_files).to eq([generated_path])
         expect(result.remaining_unresolved_files).to eq([other_path])
+      end
+    end
+  end
+
+  describe described_class::Git do
+    subject(:git) { described_class.new }
+
+    let(:path) { "config/locales/crowdin/es.yml" }
+    let(:success) { instance_double(Process::Status, success?: true) }
+
+    it "loads stage object ids once per path" do
+      allow(Open3).to receive(:capture3)
+                        .with("git", "ls-files", "--stage", "--", path)
+                        .once
+                        .and_return([
+                                      <<~OUT,
+                                        100644 sha-base 1\t#{path}
+                                        100644 sha-ours 2\t#{path}
+                                      OUT
+                                      "",
+                                      success
+                                    ])
+      allow(Open3).to receive(:capture3)
+                        .with("git", "cat-file", "blob", "sha-base")
+                        .and_return(["base", "", success])
+      allow(Open3).to receive(:capture3)
+                        .with("git", "cat-file", "blob", "sha-ours")
+                        .and_return(["ours", "", success])
+
+      expect(git.cat_file(1, path)).to eq("base")
+      expect(git.cat_file(2, path)).to eq("ours")
+    end
+
+    it "raises when a requested stage is missing" do
+      allow(Open3).to receive(:capture3)
+                        .with("git", "ls-files", "--stage", "--", path)
+                        .and_return(["100644 sha-base 1\t#{path}\n", "", success])
+
+      expect { git.cat_file(3, path) }
+        .to raise_error(described_class::MissingStageEntry, "missing stage 3")
+    end
+  end
+
+  describe "script/i18n/merge_generated_locale_conflicts" do
+    let(:script_path) { Rails.root.join("script/i18n/merge_generated_locale_conflicts") }
+    let(:merger) { instance_double(described_class, call: result) }
+
+    before do
+      allow(described_class).to receive(:new).and_return(merger)
+    end
+
+    context "when all generated conflicts were resolved" do
+      let(:result) do
+        described_class::Result.new(
+          resolved_files: ["config/locales/crowdin/es.yml"],
+          remaining_unresolved_files: []
+        )
+      end
+
+      it "exits successfully" do
+        expect { load script_path }.not_to raise_error
+      end
+    end
+
+    context "when unresolved conflicts remain" do
+      let(:result) do
+        described_class::Result.new(
+          resolved_files: [],
+          remaining_unresolved_files: ["config/locales/crowdin/es.yml"]
+        )
+      end
+
+      it "exits with status 2" do
+        expect { load script_path }
+          .to raise_error(SystemExit) { |error| expect(error.status).to eq(2) }
       end
     end
   end
