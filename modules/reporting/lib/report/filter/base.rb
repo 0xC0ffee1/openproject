@@ -189,7 +189,7 @@ class Report::Filter
         # if there is just the nil it might be actually intended to be there
         query_values.unshift nil if Array(values).size == 1 && Array(values).first.nil?
         query_values = query_values[0, arity] if query_values and arity >= 0 and arity != query_values.size
-        operator.modify(query, field, *query_values) unless field.empty?
+        operator.modify(query, field, *query_values) unless field.empty? || (arity.positive? && query_values.empty?)
       end
     end
   end

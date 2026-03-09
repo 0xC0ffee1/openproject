@@ -45,13 +45,17 @@ RSpec.describe CostQuery::Operator, :reporting_query_helper do
   def cost_query(table, field, operator, *values)
     sql = CostQuery::SqlStatement.new table
     yield sql if block_given?
-    operator.to_operator.modify sql, field, *values
+    report_operator = operator.to_operator
+    values = [nil] if report_operator.arity.positive? && values.empty?
+    report_operator.modify sql, field, *values
     ActiveRecord::Base.connection.select_all(sql.to_s).to_a
   end
 
   def query_on_entries(field, operator, *values)
     sql = CostQuery::SqlStatement.for_entries
-    operator.to_operator.modify sql, field, *values
+    report_operator = operator.to_operator
+    values = [nil] if report_operator.arity.positive? && values.empty?
+    report_operator.modify sql, field, *values
     ActiveRecord::Base.connection.select_all(sql.to_s).to_a
   end
 
@@ -88,6 +92,22 @@ RSpec.describe CostQuery::Operator, :reporting_query_helper do
 
   it "does >=" do
     expect(cost_query("projects", "id", ">=", project1.id + 1).size).to eq(1)
+  end
+
+  it "does not raise for >d without a value" do
+    expect { cost_query("projects", "created_at", ">d") }.not_to raise_error
+  end
+
+  it "does not raise for <d without a value" do
+    expect { cost_query("projects", "created_at", "<d") }.not_to raise_error
+  end
+
+  it "does not raise for =d without a value" do
+    expect { cost_query("projects", "created_at", "=d") }.not_to raise_error
+  end
+
+  it "does not raise for >=d without a value" do
+    expect { cost_query("projects", "created_at", ">=d") }.not_to raise_error
   end
 
   it "does !" do
