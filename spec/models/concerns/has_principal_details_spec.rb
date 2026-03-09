@@ -34,6 +34,27 @@ RSpec.describe HasPrincipalDetails do
   # Test through Group, which is the real consumer of this concern
   let(:group) { create(:group) }
 
+  describe "generated detail class" do
+    it "creates a named constant for the detail class" do
+      expect(defined?(GroupDetail)).to eq("constant")
+      expect(GroupDetail.superclass).to eq(ApplicationRecord)
+    end
+
+    it "sets up the back-reference belongs_to" do
+      reflection = GroupDetail.reflect_on_association(:group)
+      expect(reflection).to be_present
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.foreign_key).to eq("principal_id")
+    end
+
+    it "evaluates the block on the detail class" do
+      reflection = GroupDetail.reflect_on_association(:parent)
+      expect(reflection).to be_present
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Group")
+    end
+  end
+
   describe "detail association" do
     it "auto-builds a detail record for new instances" do
       new_group = Group.new(lastname: "Test")
@@ -63,12 +84,12 @@ RSpec.describe HasPrincipalDetails do
   end
 
   describe "attribute delegation" do
-    it "delegates simple attribute readers" do
+    it "delegates column readers" do
       group.detail.organizational_unit = true
       expect(group.organizational_unit).to be true
     end
 
-    it "delegates simple attribute writers" do
+    it "delegates column writers" do
       group.organizational_unit = true
       expect(group.detail.organizational_unit).to be true
     end
@@ -86,15 +107,22 @@ RSpec.describe HasPrincipalDetails do
         expect(group.detail.parent).to eq(parent_group)
       end
 
-      it "delegates the _id reader" do
+      it "delegates the _id reader via column delegation" do
         group.detail.parent_id = parent_group.id
         expect(group.parent_id).to eq(parent_group.id)
       end
 
-      it "delegates the _id writer" do
+      it "delegates the _id writer via column delegation" do
         group.parent_id = parent_group.id
         expect(group.detail.parent_id).to eq(parent_group.id)
       end
+    end
+
+    it "does not delegate internal columns to the detail" do
+      # These methods exist on Group itself (from AR), but should not be
+      # delegated through to the detail record.
+      group.detail.update_column(:created_at, 1.day.ago)
+      expect(group.created_at).not_to eq(group.detail.created_at)
     end
   end
 

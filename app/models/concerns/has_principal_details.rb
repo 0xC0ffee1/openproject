@@ -31,30 +31,65 @@
 module HasPrincipalDetails
   extend ActiveSupport::Concern
 
+  # Columns on the detail table that are managed automatically
+  # and should not be delegated to the principal.
+  DETAIL_INTERNAL_COLUMNS = %w[id principal_id created_at updated_at].freeze
+
   class_methods do
     # Declares a detail table for this principal subclass.
+    # The detail model class is generated automatically — no separate file needed.
     #
-    # @param class_name [String] the detail model class (default: "#{ModelName}Detail")
-    # @param delegated_attributes [Hash] attribute => delegate options
+    # The block is evaluated in the context of the generated detail class,
+    # so you can declare associations, validations, callbacks, etc.
+    #
+    # The back-reference belongs_to, uniqueness constraint, and attribute
+    # delegation are set up automatically.
     #
     # Example:
-    #   has_principal_details "GroupDetail",
-    #     organizational_unit: { allow_nil: true },
-    #     parent: { allow_nil: true }
+    #   has_principal_details do
+    #     belongs_to :parent, class_name: "Group", optional: true
+    #     validates :parent, presence: true, if: -> { parent_id.present? }
+    #   end
     #
-    def has_principal_details(class_name = nil, **delegated_attributes) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Naming/PredicatePrefix
-      class_name ||= "#{name}Detail"
-      association_name = class_name.underscore.to_sym
+    def has_principal_details(&) # rubocop:disable Naming/PredicatePrefix
+      detail_class = build_detail_class(&)
+      association_name = detail_class.name.underscore.to_sym
 
+      setup_detail_association(association_name, detail_class)
+      setup_detail_aliases(association_name)
+      setup_detail_delegation(association_name, detail_class)
+    end
+
+    private
+
+    def build_detail_class(&block)
+      self
+      owner_name = model_name.element.to_sym # e.g. :group
+
+      klass = Class.new(ApplicationRecord) do
+        belongs_to owner_name,
+                   inverse_of: :"#{owner_name}_detail",
+                   foreign_key: :principal_id
+
+        validates owner_name, presence: true, uniqueness: true
+
+        class_eval(&block) if block
+      end
+
+      # Register as a named constant so it appears in stack traces, queries, etc.
+      Object.const_set("#{name}Detail", klass)
+    end
+
+    def setup_detail_association(association_name, detail_class) # rubocop:disable Metrics/AbcSize
       has_one association_name, foreign_key: :principal_id,
                                 dependent: :destroy,
                                 inverse_of: model_name.element.to_sym,
-                                class_name: class_name.to_s,
+                                class_name: detail_class.name,
                                 autosave: true
       accepts_nested_attributes_for association_name
 
       # Validate the detail record and promote its errors onto the principal
-      # so they appear as direct attributes (e.g. group.errors[:parent_id]).
+      # so they appear as direct attributes (e.g. group.errors[:parent]).
       validate do
         next if detail.nil? || detail.valid?
 
@@ -67,25 +102,27 @@ module HasPrincipalDetails
       after_initialize do
         build_detail if new_record? && detail.nil?
       end
+    end
 
-      # Convenience aliases so every subclass can use `detail`
+    def setup_detail_aliases(association_name)
       alias_method :detail, association_name
       alias_method :detail=, :"#{association_name}="
       alias_method :build_detail, :"build_#{association_name}"
+    end
 
-      detail_class = class_name.constantize
+    def setup_detail_delegation(association_name, detail_class)
+      # Delegate all non-internal columns
+      detail_columns = detail_class.column_names - DETAIL_INTERNAL_COLUMNS
+      detail_columns.each do |col|
+        delegate col.to_sym, :"#{col}=", to: association_name, allow_nil: true
+      end
 
-      delegated_attributes.each do |attr, options|
-        opts = options.is_a?(Hash) ? options : {}
-        delegate attr, to: association_name, **opts
-        # Also delegate the writer if it exists (skip for query methods ending in ?)
-        delegate "#{attr}=", to: association_name, **opts unless attr.to_s.end_with?("?")
+      # For belongs_to associations, also delegate the object reader/writer
+      # (columns like parent_id are already covered above)
+      detail_class.reflect_on_all_associations(:belongs_to).each do |reflection|
+        next if reflection.name == model_name.element.to_sym # skip the back-reference
 
-        # For belongs_to associations, also delegate the _id getter and setter
-        if detail_class.reflect_on_association(attr)&.macro == :belongs_to
-          delegate "#{attr}_id", to: association_name, **opts
-          delegate "#{attr}_id=", to: association_name, **opts
-        end
+        delegate reflection.name, :"#{reflection.name}=", to: association_name, allow_nil: true
       end
     end
   end

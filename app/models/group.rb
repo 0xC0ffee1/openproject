@@ -31,9 +31,11 @@
 class Group < Principal
   include ::Scopes::Scoped
 
-  has_principal_details "GroupDetail",
-                        organizational_unit: { allow_nil: true },
-                        parent: { allow_nil: true }
+  has_principal_details do
+    belongs_to :parent, class_name: "Group", optional: true
+
+    validates :parent, presence: true, if: -> { parent_id.present? }
+  end
 
   # Register a partial to be rendered on the synchronized groups tab of the groups admin page
   #
