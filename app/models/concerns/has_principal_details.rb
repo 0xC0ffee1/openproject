@@ -63,7 +63,6 @@ module HasPrincipalDetails
     private
 
     def build_detail_class(&block)
-      self
       owner_name = model_name.element.to_sym # e.g. :group
 
       klass = Class.new(ApplicationRecord) do

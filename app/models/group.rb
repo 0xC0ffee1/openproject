@@ -30,12 +30,15 @@
 
 class Group < Principal
   include ::Scopes::Scoped
+  include Groups::Hierarchy
 
   has_principal_details do
     belongs_to :parent, class_name: "Group", optional: true
 
     validates :parent, presence: true, if: -> { parent_id.present? }
   end
+
+  validate :no_circular_parent, if: -> { parent_id.present? }
 
   # Register a partial to be rendered on the synchronized groups tab of the groups admin page
   #
@@ -154,5 +157,11 @@ class Group < Principal
 
   def fail_add
     fail "Do not add users through association, use `Groups::AddUsersService` instead."
+  end
+
+  def no_circular_parent
+    if parent_id == id || descendant_ids.include?(parent_id)
+      errors.add(:parent_id, :circular_dependency)
+    end
   end
 end

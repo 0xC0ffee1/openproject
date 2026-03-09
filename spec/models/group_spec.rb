@@ -203,6 +203,117 @@ RSpec.describe Group do
     end
   end
 
+  describe "hierarchy" do
+    # Build a tree: grandparent -> parent -> child -> grandchild
+    let!(:grandparent) { create(:group) }
+    let!(:parent_group) { create(:group, parent_id: grandparent.id) }
+    let!(:child) { create(:group, parent_id: parent_group.id) }
+    let!(:grandchild) { create(:group, parent_id: child.id) }
+    let!(:unrelated) { create(:group) }
+
+    describe "#children" do
+      it "returns direct children only" do
+        expect(grandparent.children).to contain_exactly(parent_group)
+        expect(parent_group.children).to contain_exactly(child)
+      end
+
+      it "returns empty for a leaf group" do
+        expect(grandchild.children).to be_empty
+      end
+    end
+
+    describe "#descendants" do
+      it "returns all groups below in the tree" do
+        expect(grandparent.descendants).to contain_exactly(parent_group, child, grandchild)
+      end
+
+      it "returns direct child and its subtree" do
+        expect(parent_group.descendants).to contain_exactly(child, grandchild)
+      end
+
+      it "returns empty for a leaf group" do
+        expect(grandchild.descendants).to be_empty
+      end
+
+      it "does not include unrelated groups" do
+        expect(grandparent.descendants).not_to include(unrelated)
+      end
+    end
+
+    describe "#self_and_descendants" do
+      it "includes self and all descendants" do
+        expect(grandparent.self_and_descendants).to contain_exactly(grandparent, parent_group, child, grandchild)
+      end
+    end
+
+    describe "#ancestors" do
+      it "returns all groups above in the tree" do
+        expect(grandchild.ancestors).to contain_exactly(child, parent_group, grandparent)
+      end
+
+      it "returns empty for a root group" do
+        expect(grandparent.ancestors).to be_empty
+      end
+    end
+
+    describe "#self_and_ancestors" do
+      it "includes self and all ancestors" do
+        expect(grandchild.self_and_ancestors).to contain_exactly(grandchild, child, parent_group, grandparent)
+      end
+    end
+
+    describe "#root" do
+      it "returns the topmost ancestor" do
+        expect(grandchild.root).to eq(grandparent)
+        expect(child.root).to eq(grandparent)
+      end
+
+      it "returns self when already the root" do
+        expect(grandparent.root).to eq(grandparent)
+      end
+    end
+
+    describe "#root?" do
+      it "is true when there is no parent" do
+        expect(grandparent).to be_root
+      end
+
+      it "is false when there is a parent" do
+        expect(child).not_to be_root
+      end
+    end
+
+    describe "circular dependency prevention" do
+      it "is invalid when assigning self as parent" do
+        grandparent.parent_id = grandparent.id
+        expect(grandparent).not_to be_valid
+        expect(grandparent.errors[:parent_id]).to be_present
+      end
+
+      it "is invalid when assigning a direct child as parent" do
+        grandparent.parent_id = parent_group.id
+        expect(grandparent).not_to be_valid
+        expect(grandparent.errors[:parent_id]).to be_present
+      end
+
+      it "is invalid when assigning a distant descendant as parent" do
+        grandparent.parent_id = grandchild.id
+        expect(grandparent).not_to be_valid
+        expect(grandparent.errors[:parent_id]).to be_present
+      end
+
+      it "is valid when assigning an unrelated group as parent" do
+        grandchild.parent_id = unrelated.id
+        expect(grandchild).to be_valid
+      end
+
+      it "is valid when clearing the parent" do
+        child.parent_id = nil
+        expect(child).to be_valid
+      end
+    end
+  end
+
   it_behaves_like "creates an audit trail on destroy" do
     subject { create(:attachment) }
   end

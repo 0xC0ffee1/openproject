@@ -1472,6 +1472,12 @@ en:
         dependencies: "Dependencies"
 
   activerecord:
+    errors:
+      models:
+        group:
+          attributes:
+            parent_id:
+              circular_dependency: "would create a circular group hierarchy."
     attributes:
       jira_import:
         projects: "Projects"
