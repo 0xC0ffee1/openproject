@@ -246,12 +246,25 @@ class ApplicationController < ActionController::Base
   # Note: find() is Project.friendly.find()
   def find_project
     @project = Project.visible.find(params[:id])
+    redirect_if_historical_project_identifier(:id)
   end
 
   # Find project of id params[:project_id]
   # Note: find() is Project.friendly.find()
   def find_project_by_project_id
     @project = Project.visible.find(params[:project_id])
+    redirect_if_historical_project_identifier(:project_id)
+  end
+
+  # Redirects to the project's current identifier if the request used a historical one.
+  # Friendly_id's :history extension tracks old identifiers; non-numeric params that
+  # no longer match the current identifier indicate a stale URL.
+  def redirect_if_historical_project_identifier(identifier_param_key)
+    param = params[identifier_param_key]
+    if request.get? && param != @project.identifier
+      redirect_to url_for(params.to_unsafe_h.merge(identifier_param_key => @project.identifier)),
+                  status: :moved_permanently
+    end
   end
 
   # Find project by project_id if given

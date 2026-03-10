@@ -214,7 +214,7 @@ class Project < ApplicationRecord
 
   validates_associated :repository, :wiki
 
-  friendly_id :identifier, use: :finders
+  friendly_id :identifier, use: %i[finders history], slug_column: :identifier
 
   scopes :activated_in_storage,
          :allowed_to,
