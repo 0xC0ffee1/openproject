@@ -38,7 +38,6 @@ module OpenProject::Backlogs
             schema :position,
                    type: "Integer",
                    required: false,
-                   writable: false,
                    show_if: ->(*) {
                      backlogs_constraint_passed?(:position)
                    }
@@ -50,9 +49,18 @@ module OpenProject::Backlogs
                      backlogs_constraint_passed?(:story_points)
                    }
 
+            schema_with_allowed_link :sprint,
+                                     has_default: false,
+                                     required: false,
+                                     show_if: ->(*) {
+                                       backlogs_constraint_passed?(:sprint)
+                                     },
+                                     href_callback: ->(*) {
+                                       api_v3_paths.project_sprints(represented.project_id)
+                                     }
+
             define_method :backlogs_constraint_passed? do |attribute|
-              represented.project&.backlogs_enabled? &&
-                (!represented.type || represented.type.passes_attribute_constraint?(attribute))
+              !represented.type || represented.type.passes_attribute_constraint?(attribute, project: represented.project)
             end
           end
         end

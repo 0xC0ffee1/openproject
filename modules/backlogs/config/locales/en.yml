@@ -47,9 +47,10 @@ en:
       sprint:
         duration: "Sprint duration"
       work_package:
-        position: "Position"
-        story_points: "Story Points"
         backlogs_work_package_type: "Backlog type"
+        position: "Position"
+        sprint: "Sprint"
+        story_points: "Story Points"
 
     errors:
       models:

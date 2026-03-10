@@ -189,8 +189,16 @@ module OpenProject::Backlogs
       "#{root}/sprints"
     end
 
+    add_api_path :project_sprints do |id|
+      "#{root}/projects/#{id}/sprints"
+    end
+
     add_api_endpoint "API::V3::Root" do
       mount ::API::V3::Sprints::SprintsAPI
+    end
+
+    add_api_endpoint "API::V3::Projects::ProjectsAPI", :id do
+      mount ::API::V3::Sprints::SprintsByProjectAPI
     end
 
     config.to_prepare do
@@ -208,9 +216,18 @@ module OpenProject::Backlogs
         end
       end
 
+      story_and_sprint_permission = ->(type, project: nil) do
+        if project.present?
+          type.story? && User.current.allowed_in_project?(:view_sprints, project)
+        else
+          # Allow globally configuring the attribute if story
+          type.story?
+        end
+      end
+
       ::Type.add_constraint :position, enabled_backlogs_story
       ::Type.add_constraint :story_points, enabled_backlogs_story
-      ::Type.add_constraint :sprint, enabled_backlogs_story
+      ::Type.add_constraint :sprint, story_and_sprint_permission
 
       ::Type.add_default_mapping(:estimates_and_progress, :story_points)
       ::Type.add_default_mapping(:other, :position)

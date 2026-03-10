@@ -29,18 +29,22 @@
 require "spec_helper"
 
 RSpec.describe API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
+  include API::V3::Utilities::PathHelper
+
   let(:custom_field) { build(:custom_field) }
   let(:schema) do
     API::V3::WorkPackages::Schema::SpecificWorkPackageSchema.new(work_package:)
   end
-  let(:representer) { described_class.create(schema, self_link: nil, current_user:) }
+  let(:representer) { described_class.create(schema, form_embedded: true, self_link: nil, current_user:) }
+  let(:project) { work_package.project }
   let(:work_package) { build_stubbed(:work_package, type: build_stubbed(:type)) }
 
   let(:current_user) { build_stubbed(:user) }
+  let(:permissions) { %i(view_work_packages edit_work_packages view_sprints manage_sprint_items) }
 
   before do
     mock_permissions_for(current_user) do |mock|
-      mock.allow_in_project :edit_work_packages, project: work_package.project
+      mock.allow_in_project *permissions, project:
     end
 
     login_as(current_user)
@@ -50,9 +54,9 @@ RSpec.describe API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
     allow(work_package).to receive(:leaf?).and_return(true)
   end
 
-  describe "storyPoints" do
-    subject { representer.to_json }
+  subject { representer.to_json }
 
+  describe "storyPoints" do
     it_behaves_like "has basic schema properties" do
       let(:path) { "storyPoints" }
       let(:type) { "Integer" }
@@ -78,6 +82,82 @@ RSpec.describe API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
 
       it "does not show story points" do
         expect(subject).not_to have_json_path("storyPoints")
+      end
+    end
+  end
+
+  describe "position" do
+    it_behaves_like "has basic schema properties" do
+      let(:path) { "position" }
+      let(:type) { "Integer" }
+      let(:name) { I18n.t("activerecord.attributes.work_package.position") }
+      let(:required) { false }
+      let(:writable) { false }
+    end
+
+    context "when backlogs module is disabled" do
+      before do
+        allow(schema.project).to receive(:backlogs_enabled?).and_return(false)
+      end
+
+      it "does not show position" do
+        expect(subject).not_to have_json_path("position")
+      end
+    end
+
+    context "when not a story" do
+      before do
+        allow(schema.type).to receive(:story?).and_return(false)
+      end
+
+      it "does not show position" do
+        expect(subject).not_to have_json_path("position")
+      end
+    end
+  end
+
+  describe "sprint" do
+    let(:path) { "sprint" }
+
+    it_behaves_like "has basic schema properties" do
+      let(:type) { "Sprint" }
+      let(:name) { I18n.t("activerecord.attributes.work_package.sprint") }
+      let(:required) { false }
+      let(:writable) { true }
+      let(:location) { "_links" }
+    end
+
+    it_behaves_like "links to allowed values via collection link" do
+      let(:href) { api_v3_paths.project_sprints(project.id) }
+    end
+
+    context "when lacking permission to set the sprint" do
+      let(:permissions) { %i(view_work_packages edit_work_packages view_sprints) }
+
+      it_behaves_like "has basic schema properties" do
+        let(:type) { "Sprint" }
+        let(:name) { I18n.t("activerecord.attributes.work_package.sprint") }
+        let(:required) { false }
+        let(:writable) { false }
+        let(:location) { "_links" }
+      end
+    end
+
+    context "when lacking permission to see the sprints (or if backlogs is disabled)" do
+      let(:permissions) { %i(view_work_packages edit_work_packages) }
+
+      it "has no reference to the sprint" do
+        expect(subject).not_to have_json_path(path)
+      end
+    end
+
+    context "when not a story" do
+      before do
+        allow(schema.type).to receive(:story?).and_return(false)
+      end
+
+      it "does not show sprint" do
+        expect(subject).not_to have_json_path("sprint")
       end
     end
   end

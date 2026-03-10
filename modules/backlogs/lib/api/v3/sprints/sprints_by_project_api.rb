@@ -28,20 +28,25 @@
 # See COPYRIGHT and LICENSE files for more details.
 # ++
 
-require "spec_helper"
-require_relative Rails.root.join("spec/lib/api/v3/utilities/path_helper_examples").to_s
+module API
+  module V3
+    module Sprints
+      class SprintsByProjectAPI < ::API::OpenProjectAPI
+        resources :sprints do
+          after_validation do
+            guard_feature_flag(:scrum_projects)
 
-RSpec.describe API::V3::Utilities::PathHelper do
-  include_context "on api v3 paths"
+            authorize_in_project(:view_sprints, project: @project)
+          end
 
-  describe "sprint paths" do
-    it_behaves_like "index", :sprint
-    it_behaves_like "show", :sprint
-
-    describe "#project_sprints" do
-      subject { helper.project_sprints 1 }
-
-      it_behaves_like "api v3 path", "/projects/1/sprints"
+          get &::API::V3::Utilities::Endpoints::Index
+                 .new(
+                   model: Agile::Sprint,
+                   scope: -> { Agile::Sprint.for_project(@project) }
+                 )
+                 .mount
+        end
+      end
     end
   end
 end

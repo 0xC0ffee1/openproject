@@ -44,8 +44,6 @@ module Agile
       order(arel_table[:start_date].asc.nulls_last,
             arel_table[:finish_date].asc.nulls_last)
     end
-    # FIXME: replace this stub with a meaningful implementation.
-    scope :visible, -> { all }
 
     enum :status,
          {
