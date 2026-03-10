@@ -32,4 +32,4 @@
 require_relative "../../lib/open_project/generated_locale_conflict_merger"
 
 result = OpenProject::GeneratedLocaleConflictMerger.new.call
-exit 2 if result.remaining_unresolved_files.any?
+exit 2 if result.unresolved_files.any?

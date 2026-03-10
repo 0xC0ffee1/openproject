@@ -34,7 +34,7 @@ require "yaml"
 module OpenProject
   class GeneratedLocaleConflictMerger
     StageContent = Data.define(:raw, :parsed)
-    Result = Data.define(:resolved_files, :remaining_unresolved_files)
+    Result = Data.define(:resolved_files, :unresolved_files)
 
     GENERATED_LOCALE_PATTERNS = [
       "config/locales/crowdin/*.yml",
@@ -58,7 +58,7 @@ module OpenProject
 
       Result.new(
         resolved_files:,
-        remaining_unresolved_files:
+        unresolved_files: remaining_unresolved_files
       )
     end
 

@@ -63,7 +63,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         result = merger.call
 
         expect(result.resolved_files).to eq([])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         result = merger.call
 
         expect(result.resolved_files).to eq([])
-        expect(result.remaining_unresolved_files).to eq([other_path])
+        expect(result.unresolved_files).to eq([other_path])
         expect(stderr.string).to include(other_path)
       end
     end
@@ -106,7 +106,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         expect(file_writer).to have_received(:write).with(generated_path, "---\nes:\n  title: New\n")
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -177,7 +177,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         YAML
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -193,7 +193,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       it "leaves the file unresolved" do
         result = merger.call
 
-        expect(result.remaining_unresolved_files).to eq([generated_path])
+        expect(result.unresolved_files).to eq([generated_path])
         expect(stderr.string).to include("invalid YAML")
       end
     end
@@ -210,7 +210,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       it "leaves the file unresolved" do
         result = merger.call
 
-        expect(result.remaining_unresolved_files).to eq([generated_path])
+        expect(result.unresolved_files).to eq([generated_path])
         expect(stderr.string).to include("expected top-level YAML mapping")
       end
     end
@@ -274,7 +274,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         expect(git).not_to have_received(:add)
         expect(git).to have_received(:rm).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -323,7 +323,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         YAML
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -362,7 +362,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         expect(file_writer).to have_received(:write).with(generated_path, theirs_yaml)
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([])
+        expect(result.unresolved_files).to eq([])
       end
     end
 
@@ -402,7 +402,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         result = merger.call
 
         expect(result.resolved_files).to eq([generated_path])
-        expect(result.remaining_unresolved_files).to eq([other_path])
+        expect(result.unresolved_files).to eq([other_path])
       end
     end
   end
@@ -458,7 +458,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:result) do
         described_class::Result.new(
           resolved_files: ["config/locales/crowdin/es.yml"],
-          remaining_unresolved_files: []
+          unresolved_files: []
         )
       end
 
@@ -471,7 +471,7 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
       let(:result) do
         described_class::Result.new(
           resolved_files: [],
-          remaining_unresolved_files: ["config/locales/crowdin/es.yml"]
+          unresolved_files: ["config/locales/crowdin/es.yml"]
         )
       end
 
