@@ -51,9 +51,11 @@ class Members::UpdateService < BaseServices::Update
   end
 
   def update_group_roles(member)
+    user_ids = member.principal.self_and_descendants.flat_map(&:user_ids).uniq
+
     Groups::UpdateRolesService
       .new(member.principal, current_user: user, contract_class: EmptyContract)
-      .call(member:, send_notifications: send_notifications?, message: notification_message)
+      .call(member:, user_ids:, send_notifications: send_notifications?, message: notification_message)
   end
 
   def event_type

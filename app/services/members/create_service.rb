@@ -50,10 +50,11 @@ class Members::CreateService < BaseServices::Create
     return unless member.principal.is_a?(Group)
 
     project_ids = member.project_id.nil? ? nil : [member.project_id]
+    user_ids = member.principal.self_and_descendants.flat_map(&:user_ids).uniq
 
     Groups::CreateInheritedRolesService
       .new(member.principal, current_user: user, contract_class: EmptyContract)
-      .call(user_ids: member.principal.user_ids, send_notifications: false, project_ids:)
+      .call(user_ids: user_ids, send_notifications: false, project_ids:)
   end
 
   def event_type

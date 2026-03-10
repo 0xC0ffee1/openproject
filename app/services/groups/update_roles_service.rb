@@ -45,13 +45,14 @@ module Groups
 
     def modify_members_and_roles(params)
       member = params.fetch(:member)
+      user_ids = params.fetch(:user_ids) { model.self_and_descendants.flat_map(&:user_ids).uniq }
 
       sql_query = ::OpenProject::SqlSanitization
-                    .sanitize update_roles_cte,
-                              group_id: model.id,
+                    .sanitize(update_roles_cte,
                               member_id: member.id,
                               project_id: member.project_id,
-                              role_ids: member.role_ids
+                              role_ids: member.role_ids,
+                              user_ids:)
 
       execute_query(sql_query)
     end
@@ -59,17 +60,11 @@ module Groups
     def update_roles_cte
       <<~SQL
         WITH
-        -- select all users of the group
-        group_users AS (
-          SELECT user_id
-          FROM #{GroupUser.table_name}
-          WHERE group_id = :group_id
-        ),
-        -- select all members of the users of the group
+        -- select all members of the users of the group (direct and descendants)
         user_members AS (
           SELECT id
           FROM #{Member.table_name}
-          WHERE user_id IN (SELECT user_id FROM group_users)
+          WHERE user_id IN (:user_ids)
           AND project_id IS NOT DISTINCT FROM :project_id
         ),
         -- select all member roles the group has for the member
