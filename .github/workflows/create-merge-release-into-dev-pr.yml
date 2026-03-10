@@ -113,7 +113,7 @@ jobs:
                   merge_status=$?
                   if [ "$merge_status" -eq 2 ]; then
                     git merge --abort
-                    merge_note=$'> [!WARNING]\n> Generated locale conflicts were auto-resolved where possible, but this branch still needs manual conflict resolution.'
+                    merge_note=$'> [!WARNING]\n> Generated locale conflicts were detected and the merge was aborted.\n> Please rerun `script/i18n/merge_generated_locale_conflicts` while manually resolving this branch.'
                   else
                     exit "$merge_status"
                   fi

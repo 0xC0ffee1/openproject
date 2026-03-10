@@ -99,7 +99,7 @@ Bugfixes for one of the actively supported versions of OpenProject should be iss
 
 We use the `create-merge-release-into-dev-pr` workflow to keep `dev` up to date with the latest release branch. If the workflow cannot merge automatically, it creates a `merge-release/X.Y-<timestamp>` branch and opens a pull request for manual conflict resolution.
 
-Generated Crowdin locale files under `config/locales/crowdin/*.yml` and `modules/*/config/locales/crowdin/*.yml` are a special case. The workflow already tries to resolve those conflicts automatically when it creates the `merge-release/...` branch. If you are resolving one of these branches locally, you can rerun the same helper after merging `dev` into the temporary branch:
+Generated Crowdin locale files under `config/locales/crowdin/*.yml` and `modules/*/config/locales/crowdin/*.yml` are a special case. The workflow already tries to resolve those conflicts automatically when it creates the `merge-release/...` branch. Auto-resolved changes are only committed when all remaining conflicts can be resolved; otherwise the merge is aborted and no partial resolutions are kept. If you are resolving one of these branches locally, you can rerun the same helper after merging `dev` into the temporary branch:
 
 ```shell
 script/i18n/merge_generated_locale_conflicts
