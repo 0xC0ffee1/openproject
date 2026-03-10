@@ -89,6 +89,10 @@ module HasPrincipalDetails
 
       scope :with_detail, -> { joins(association_name).includes(association_name) }
 
+      scope :where_detail, ->(**conditions) {
+        joins(association_name).where(detail_class.table_name => conditions)
+      }
+
       # Validate the detail record and promote its errors onto the principal
       # so they appear as direct attributes (e.g. group.errors[:parent]).
       validate do

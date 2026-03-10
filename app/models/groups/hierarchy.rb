@@ -33,7 +33,7 @@ module Groups::Hierarchy
 
   # Direct children of this group.
   def children
-    Group.joins(:group_detail).where(group_details: { parent_id: id })
+    Group.where_detail(parent_id: id)
   end
 
   # All groups below this one in the tree (any depth).

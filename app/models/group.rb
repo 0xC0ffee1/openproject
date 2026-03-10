@@ -80,7 +80,7 @@ class Group < Principal
                :create_preference,
                :create_preference!
 
-  scopes :visible, :containing_user
+  scopes :visible, :containing_user, :organizational_unit
 
   # Columns required for formatting the group's name.
   def self.columns_for_name(_formatter = nil)
