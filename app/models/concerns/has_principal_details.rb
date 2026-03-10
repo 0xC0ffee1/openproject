@@ -110,9 +110,20 @@ module HasPrincipalDetails
     end
 
     def setup_detail_delegation(association_name, detail_class)
+      # Defer schema introspection until first instantiation so that tasks like
+      # db:create can load the model without a database connection being available.
+      after_initialize do
+        self.class.send(:finalize_detail_delegation!, association_name, detail_class)
+      end
+    end
+
+    def finalize_detail_delegation!(association_name, detail_class)
+      return if @_detail_delegation_set_up
+
+      @_detail_delegation_set_up = true
+
       # Delegate all non-internal columns
-      detail_columns = detail_class.column_names - DETAIL_INTERNAL_COLUMNS
-      detail_columns.each do |col|
+      (detail_class.column_names - DETAIL_INTERNAL_COLUMNS).each do |col|
         delegate col.to_sym, :"#{col}=", to: association_name, allow_nil: true
       end
 
