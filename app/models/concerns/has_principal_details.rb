@@ -87,6 +87,8 @@ module HasPrincipalDetails
                                 autosave: true
       accepts_nested_attributes_for association_name
 
+      scope :with_detail, -> { joins(association_name).includes(association_name) }
+
       # Validate the detail record and promote its errors onto the principal
       # so they appear as direct attributes (e.g. group.errors[:parent]).
       validate do
