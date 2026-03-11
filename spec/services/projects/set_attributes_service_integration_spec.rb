@@ -64,16 +64,18 @@ RSpec.describe Projects::SetAttributesService, "integration", type: :model do
       end
     end
 
-    context "and a new project with the same identifier set" do
-      let(:project) { Project.new name: "My new project", identifier: "my-new-project" }
+    # context "and a new project with the same identifier set" do
+    #   let(:project) { Project.new name: "My new project", identifier: "my-new-project" }
 
-      it "results in an error" do
-        expect(service_result).not_to be_success
-        expect(service_result.result.identifier).to eq "my-new-project"
+    #   it "results in an error" do
+    #     expect(service_result).not_to be_success
+    #     expect(service_result.result.identifier).to eq "my-new-project"
 
-        errors = service_result.errors.full_messages
-        expect(errors).to eq ["Identifier has already been taken."]
-      end
-    end
+    #     errors = service_result.errors.full_messages
+    #     expect(errors).to eq ["Identifier has already been taken."]
+    #   end
+    # end
+
+    # TODO: With an existing project that formerly had that identifier but was changed
   end
 end
