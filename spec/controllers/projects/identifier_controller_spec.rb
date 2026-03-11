@@ -48,6 +48,13 @@ RSpec.describe Projects::IdentifierController do
         expect(response).to have_http_status(:moved_permanently)
       end
     end
+
+    context "when accessing via numeric project id" do
+      it "does not redirect" do
+        get :show, params: { project_id: project.id.to_s }
+        expect(response).not_to have_http_status(:moved_permanently)
+      end
+    end
   end
 
   describe "update" do
