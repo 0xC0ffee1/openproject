@@ -136,7 +136,7 @@ module OpenProject
 
     def raw_yaml_for(merged, base:, ours:, theirs:)
       [theirs, ours, base].each do |stage|
-        return stage.raw if present?(stage.parsed) && merged == stage.parsed
+        return stage.raw if merged == stage.parsed
       end
 
       nil
@@ -169,7 +169,7 @@ module OpenProject
     end
 
     def merge_hash_entries(base, ours, theirs, path)
-      (base.keys + ours.keys + theirs.keys).uniq.each_with_object({}) do |key, merged|
+      (base.keys | ours.keys | theirs.keys).each_with_object({}) do |key, merged|
         merged_value = merge_value(
           base.fetch(key, MISSING),
           ours.fetch(key, MISSING),
@@ -187,10 +187,6 @@ module OpenProject
 
     def missing?(value)
       value.equal?(MISSING)
-    end
-
-    def present?(value)
-      !missing?(value)
     end
 
     class Git
