@@ -128,7 +128,10 @@ module OpenProject
     end
 
     def write_merged_file(path, merged, base:, ours:, theirs:)
-      file_writer.write(path, raw_yaml_for(merged, base:, ours:, theirs:) || YAML.dump(merged))
+      raw_yaml = raw_yaml_for(merged, base:, ours:, theirs:)
+      raise "merged YAML differs from all merge stages" if raw_yaml.nil?
+
+      file_writer.write(path, raw_yaml)
       git.add(path)
       out.puts "Auto-resolved #{path}"
       path

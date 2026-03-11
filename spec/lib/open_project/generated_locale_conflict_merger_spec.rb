@@ -134,15 +134,14 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         YAML
       end
 
-      it "merges the nested hash" do
-        merger.call
+      it "leaves the file unresolved instead of reserializing it" do
+        result = merger.call
 
-        expect(file_writer).to have_received(:write).with(generated_path, <<~YAML)
-          ---
-          es:
-            first: New first
-            second: New second
-        YAML
+        expect(file_writer).not_to have_received(:write)
+        expect(git).not_to have_received(:add)
+        expect(result.resolved_files).to eq([])
+        expect(result.unresolved_files).to eq([generated_path])
+        expect(stderr.string).to include("merged YAML differs from all merge stages")
       end
     end
 
@@ -363,6 +362,41 @@ RSpec.describe OpenProject::GeneratedLocaleConflictMerger do
         expect(git).to have_received(:add).with(generated_path)
         expect(result.resolved_files).to eq([generated_path])
         expect(result.unresolved_files).to eq([])
+      end
+    end
+
+    context "when a merged file differs from every raw stage" do
+      let(:conflicted_files) { [generated_path] }
+
+      before do
+        allow(git).to receive(:cat_file).with(1, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            first: Old first
+            second: Old second
+        YAML
+        allow(git).to receive(:cat_file).with(2, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            first: Release first
+            second: Old second
+        YAML
+        allow(git).to receive(:cat_file).with(3, generated_path).and_return(<<~YAML)
+          ---
+          es:
+            first: Old first
+            second: Dev second
+        YAML
+      end
+
+      it "leaves the file unresolved instead of reserializing it" do
+        result = merger.call
+
+        expect(file_writer).not_to have_received(:write)
+        expect(git).not_to have_received(:add)
+        expect(result.resolved_files).to eq([])
+        expect(result.unresolved_files).to eq([generated_path])
+        expect(stderr.string).to include("merged YAML differs from all merge stages")
       end
     end
 
