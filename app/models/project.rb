@@ -218,6 +218,13 @@ class Project < ApplicationRecord
 
   friendly_id :identifier, use: %i[finders history], slug_column: :identifier
 
+  # FriendlyId::Slugged adds after_validation :unset_slug_if_invalid, which reverts the
+  # slug column to its previous value when validation fails. With slug_column: :identifier,
+  # this would reset a manually-set identifier back to nil on new records. Since the
+  # identifier is managed by acts_as_url and user input (not FriendlyId's slug generator),
+  # we disable this behaviour entirely.
+  def unset_slug_if_invalid; end
+
   scopes :activated_in_storage,
          :allowed_to,
          :assignable_parents,
