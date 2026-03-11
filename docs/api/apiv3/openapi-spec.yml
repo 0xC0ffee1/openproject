@@ -380,6 +380,8 @@ paths:
     "$ref": "./paths/project_available_assignees.yml"
   "/api/v3/projects/{id}/categories":
     "$ref": "./paths/project_categories.yml"
+  "/api/v3/projects/{id}/sprints":
+    "$ref": "./paths/project_sprints.yml"
   "/api/v3/projects/{id}/types":
     "$ref": "./paths/project_types.yml"
   "/api/v3/projects/{id}/versions":

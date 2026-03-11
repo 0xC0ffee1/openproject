@@ -101,6 +101,17 @@ allOf:
           **(NOT IMPLEMENTED)** When scheduling, whether or not to ignore the non working days being defined.
           A work package with the flag set to true will be allowed to be scheduled to a non working day.
         readOnly: true
+      position:
+        type:
+          - "integer"
+          - "null"
+        description: |-
+          The position this work package has in a version configured to be backlog (sprint or product).
+
+          # Conditions
+
+          **Permission** Backlogs needs to be enabled in the work package's project and the work package's type is configured to be a backlog type.
+        readOnly: true
       spentTime:
         type: string
         format: duration
@@ -111,6 +122,17 @@ allOf:
 
           **Permission** view time entries
         readOnly: true
+      storyPoints:
+        type:
+          - "integer"
+          - "null"
+        description: |-
+          The estimation in story points on how long this work package will take to complete
+
+          # Conditions
+
+          **Permission** Backlogs needs to be enabled in the work package's project and the work package's type is configured to be a backlog type.
+        readOnly: false
       percentageDone:
         type:
           - "integer"
@@ -498,6 +520,17 @@ allOf:
                   The current status of the work package
 
                   **Resource**: Status
+          sprint:
+            allOf:
+              - $ref: "./link.yml"
+              - description: |-
+                  The sprint the work package is assigned to
+
+                  **Resource**: Sprint
+
+                  # Conditions
+
+                  **Permission** view sprints
           timeEntries:
             allOf:
               - $ref: "./link.yml"
