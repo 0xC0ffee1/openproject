@@ -568,7 +568,7 @@ RSpec.describe ProjectsController do
     end
 
     it "redirects to the current identifier with 301" do
-      expect(response).to redirect_to(copy_form_project_path("new-blog"))
+      expect(response).to redirect_to(copy_project_path("new-blog"))
       expect(response).to have_http_status(:moved_permanently)
     end
   end
