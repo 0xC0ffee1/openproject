@@ -370,10 +370,11 @@ class Project < ApplicationRecord
   # current one — those are already caught by the uniqueness validation above, and
   # including them here would produce a duplicate error.
   def identifier_not_historically_reserved
+    return if errors.any? { |error| error.attribute == :identifier && error.type == :taken }
+
     already_existing = FriendlyId::Slug
                          .where(slug: identifier, sluggable_type: self.class.to_s)
                          .where.not(sluggable_id: id)
-                         .where.not(sluggable_id: Project.where(identifier:).select(:id))
                          .exists?
 
     errors.add(:identifier, :taken) if already_existing
