@@ -32,9 +32,16 @@ class InitializeHistoricIdentifiers < ActiveRecord::Migration[8.1]
   def up
     execute <<~SQL.squish
       INSERT INTO friendly_id_slugs (slug, sluggable_id, sluggable_type, scope, created_at)
-      SELECT identifier, id, 'Project', NULL, NOW()
-      FROM projects
-      WHERE identifier IS NOT NULL
+      SELECT p.identifier, p.id, 'Project', NULL, NOW()
+      FROM projects p
+      WHERE p.identifier IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM friendly_id_slugs fis
+        WHERE fis.slug = p.identifier
+        AND fis.sluggable_id = p.id
+        AND fis.sluggable_type = 'Project'
+        AND fis.scope IS NULL
+      )
     SQL
   end
 
