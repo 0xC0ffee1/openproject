@@ -85,4 +85,12 @@ RSpec.describe RbTaskboardsController do
       end
     end
   end
+
+  describe "stale identifier redirect" do
+    let(:project) { create(:project) }
+    let(:sprint) { create(:sprint, project:) }
+
+    it_behaves_like "redirects GET requests using a historical project identifier",
+                    :show, { sprint_id: -> { sprint.id } }
+  end
 end

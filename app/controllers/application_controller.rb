@@ -260,9 +260,10 @@ class ApplicationController < ActionController::Base
   # friendly_id's :history extension records old identifiers in friendly_id_slugs; if the
   # param is a slug (param.friendly_id? is truthy) that no longer matches the current
   # identifier, it must be a historical slug. Numeric IDs are passed through without redirect.
+  # Only redirects HTML requests; turbo_stream and other formats are left as-is.
   def redirect_if_historical_project_identifier(identifier_param_key)
     param = params[identifier_param_key]
-    if request.get? && param.friendly_id? && param != @project.identifier
+    if request.get? && request.format.html? && param.friendly_id? && param != @project.identifier
       redirect_to url_for(params.to_unsafe_h.merge(identifier_param_key => @project.identifier)),
                   status: :moved_permanently
     end

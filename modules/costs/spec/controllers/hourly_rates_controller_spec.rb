@@ -248,4 +248,16 @@ RSpec.describe HourlyRatesController do
       end
     end
   end
+
+  describe "stale identifier redirect" do
+    let(:project) { create(:project) }
+    let(:rate_user) { create(:user) }
+
+    before do
+      login_as(admin)
+    end
+
+    it_behaves_like "redirects GET requests using a historical project identifier",
+                    :show, { id: -> { rate_user.id } }
+  end
 end

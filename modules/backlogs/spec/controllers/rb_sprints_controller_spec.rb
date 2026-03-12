@@ -385,4 +385,24 @@ RSpec.describe RbSprintsController do
       end
     end
   end
+
+  describe "stale identifier handling" do
+    let(:user) { create(:user, member_with_permissions: { project => %i[view_sprints create_sprints] }) }
+    let(:project) { create(:project) }
+    let!(:old_identifier) { project.identifier }
+
+    before do
+      login_as(user)
+      project.update!(identifier: "current-identifier")
+      allow(Setting)
+        .to receive(:plugin_openproject_backlogs)
+              .and_return({ "story_types" => [1], "task_type" => 2 })
+    end
+
+    it "does not redirect turbo_stream requests with historical identifier" do
+      get :new_dialog, params: { project_id: old_identifier }, format: :turbo_stream
+      expect(response).to be_successful
+      expect(response).not_to have_http_status(:moved_permanently)
+    end
+  end
 end

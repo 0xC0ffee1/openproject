@@ -290,4 +290,21 @@ RSpec.describe TimeEntriesController do
       end
     end
   end
+
+  describe "stale identifier handling" do
+    let(:project) { create(:project) }
+    let(:user) { create(:user, member_with_permissions: { project => [:log_time] }) }
+    let!(:old_identifier) { project.identifier }
+
+    before do
+      login_as(user)
+      project.update!(identifier: "current-identifier")
+    end
+
+    it "does not redirect turbo_stream requests with historical identifier" do
+      get :dialog, params: { project_id: old_identifier }, format: :turbo_stream
+      expect(response).to be_successful
+      expect(response).not_to have_http_status(:moved_permanently)
+    end
+  end
 end

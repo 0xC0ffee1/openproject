@@ -753,4 +753,15 @@ RSpec.describe CostlogController do
       it_behaves_like "forbidden update"
     end
   end
+
+  describe "stale identifier redirect" do
+    let(:project) { create(:project_with_types) }
+    let(:user) { create(:user, member_with_permissions: { project => [:log_costs] }) }
+
+    before do
+      login_as(user)
+    end
+
+    it_behaves_like "redirects GET requests using a historical project identifier", :new
+  end
 end
