@@ -40,13 +40,21 @@ module Storages
 
             def validate
               register_checks(
-                :team_folder_app, :files_request, :userless_access, :team_folder_presence, :team_folder_contents
+                :team_folder_app,
+                :files_request,
+                :userless_access,
+                :team_folder_presence,
+                :project_folders_linked,
+                :project_folders_exist,
+                :team_folder_contents
               )
 
               team_folder_app_checks
               files_request_failed_with_unknown_error
               userless_access_denied
               team_folder_not_found
+              project_folders_linked
+              project_folders_exist
               with_unexpected_content
             end
 
@@ -66,7 +74,7 @@ module Storages
               if capabilities.group_folder_disabled?
                 fail_check(:team_folder_app, :nc_dependency_missing, context: { dependency: })
               elsif capabilities.group_folder_version < required_version
-                fail_check(:team_folder_app, :nc_dependency_version_mismatch, context: { dependency: })
+                warn_check(:team_folder_app, :nc_dependency_version_mismatch, context: { dependency: })
               else
                 pass_check(:team_folder_app)
               end
@@ -92,12 +100,33 @@ module Storages
               pass_check(:files_request)
             end
 
+            def project_folders_linked
+              ampf_project_storages = @storage.project_storages.active.automatic
+              expected = ampf_project_storages.count
+              actual = ampf_project_storages.with_project_folder.count
+              return pass_check(:project_folders_linked) if actual == expected
+
+              warn_check(:project_folders_linked, :nc_unlinked_project_folders, context: { actual:, expected: })
+            end
+
+            def project_folders_exist
+              @storage.project_storages.active.automatic.with_project_folder.each do |project_storage|
+                next if existing_folder_ids.include?(project_storage.project_folder_id)
+
+                return fail_check(
+                  :project_folders_exist, :nc_project_folder_missing, context: { project: project_storage.project.name }
+                )
+              end
+
+              pass_check(:project_folders_exist)
+            end
+
             def with_unexpected_content
               unexpected_files = files.value!.reject { managed_project_folder_ids.include?(it.id) }
               return pass_check(:team_folder_contents) if unexpected_files.empty?
 
               log_extraneous_files(unexpected_files)
-              warn_check(:team_folder_contents, :nc_unexpected_content)
+              warn_check(:team_folder_contents, :nc_unexpected_files, context: { sample: unexpected_files.sample.name })
             end
 
             def log_extraneous_files(unexpected_files)
@@ -119,6 +148,10 @@ module Storages
               @files ||= Input::Files.build(folder: @storage.group_folder).bind do |input_data|
                 Registry.resolve("#{@storage}.queries.files").call(storage: @storage, auth_strategy:, input_data:)
               end
+            end
+
+            def existing_folder_ids
+              @existing_folder_ids ||= files.value!.all_folders.to_set(&:id)
             end
 
             def noop = Input::Strategy.build(key: :noop)
