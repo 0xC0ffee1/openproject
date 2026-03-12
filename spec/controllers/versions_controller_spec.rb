@@ -29,7 +29,6 @@
 #++
 
 require "spec_helper"
-require "support/shared/controllers/stale_project_identifier_redirect"
 
 RSpec.describe VersionsController do
   let(:user) { create(:admin) }
