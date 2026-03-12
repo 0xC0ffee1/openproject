@@ -59,6 +59,8 @@ Rails.application.routes.draw do
               as: :details,
               work_package_split_view: true,
               defaults: { tab: :overview }
+
+          get :sprint_planning
         end
       end
 

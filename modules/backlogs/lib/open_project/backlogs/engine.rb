@@ -66,7 +66,7 @@ module OpenProject::Backlogs
 
       project_module :backlogs, dependencies: :work_package_tracking do
         permission :view_sprints,
-                   { rb_master_backlogs: %i[index details],
+                   { rb_master_backlogs: %i[index sprint_planning details],
                      rb_sprints: %i[index show show_name],
                      rb_wikis: :show,
                      rb_stories: %i[index show],

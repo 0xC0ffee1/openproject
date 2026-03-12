@@ -79,6 +79,11 @@ $op-backlogs-header--points-min-width-narrow: 2rem
   flex-direction: row
   gap: var(--stack-gap-normal)
 
+  // Line that separates left side of sprint planning from right side of sprint planning
+  .op-backlogs-lists:first-child
+    border-right: 1px solid var(--borderColor-default)
+    padding-right: var(--stack-gap-normal)
+
 .op-backlogs-lists
   display: flex
   flex-direction: column

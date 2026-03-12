@@ -62,4 +62,8 @@ class RbApplicationController < ApplicationController
       end
     end
   end
+
+  def not_authorized_on_feature_flag_inactive
+    render_403 unless OpenProject::FeatureDecisions.scrum_projects_active?
+  end
 end

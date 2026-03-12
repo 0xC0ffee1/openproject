@@ -33,23 +33,22 @@ class RbMasterBacklogsController < RbApplicationController
 
   menu_item :backlogs
 
-  before_action :load_backlogs, only: :index
+  before_action :not_authorized_on_feature_flag_inactive, only: :sprint_planning
+  before_action :load_backlogs, only: %i[index sprint_planning]
+
+  def sprint_planning
+    if turbo_frame_request?
+      render partial: "sprint_planning_list", layout: false
+    else
+      render :sprint_planning
+    end
+  end
 
   def index
-    if OpenProject::FeatureDecisions.scrum_projects_active?
-      # Feature flag is active, render the new views
-      if turbo_frame_request?
-        render partial: "agile_list", layout: false
-      else
-        render :agile_index
-      end
+    if turbo_frame_request?
+      render partial: "list", layout: false
     else
-      # Feature flag is not active, render legacy views
-      if turbo_frame_request? # rubocop:disable Style/IfInsideElse
-        render partial: "list", layout: false
-      else
-        render :index
-      end
+      render :index
     end
   end
 
@@ -60,14 +59,20 @@ class RbMasterBacklogsController < RbApplicationController
       load_backlogs
 
       if OpenProject::FeatureDecisions.scrum_projects_active?
-        render :agile_index
+        render :sprint_planning
       else
         render :index
       end
     end
   end
 
-  def split_view_base_route = backlogs_project_backlogs_path(request.query_parameters)
+  def split_view_base_route
+    if OpenProject::FeatureDecisions.scrum_projects.active?
+      sprint_planning_backlogs_project_backlogs_path(@project)
+    else
+      backlogs_project_backlogs_path(request.query_parameters)
+    end
+  end
 
   private
 

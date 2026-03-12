@@ -43,51 +43,10 @@ See COPYRIGHT and LICENSE files for more details.
       )
     end
   %>
-
-  <%=
-    render(Primer::OpenProject::SubHeader.new) do |subheader|
-      if allow_sprint_creation?(@project)
-        # Scrum sprints are available, show an action menu to create Sprints and Versions
-        subheader.with_action_menu(
-          leading_icon: :plus,
-          trailing_icon: :"triangle-down",
-          label: t(:button_create),
-          button_arguments: { scheme: :primary }
-        ) do |menu|
-          menu.with_item(
-            label: Version.human_model_name,
-            href: new_project_version_path(@project)
-          )
-
-          menu.with_item(
-            label: Agile::Sprint.human_model_name,
-            href: new_dialog_project_sprints_path(@project),
-            content_arguments: {
-              data: {
-                controller: "async-dialog",
-                test_selector: "op-sprints--new-sprint-button"
-              }
-            }
-          )
-        end
-      else
-        # No scrum sprints, we only show a "+ Version" button
-        subheader.with_action_button(
-          scheme: :primary,
-          leading_icon: :plus,
-          label: I18n.t(:label_version_new),
-          tag: :a,
-          href: new_project_version_path(@project)
-        ) do
-          Version.human_model_name
-        end
-      end
-    end
-  %>
 <% end %>
 
 <% content_for :content_body do %>
-  <%= render partial: "agile_list" %>
+  <%= render partial: "sprint_planning_list" %>
 <% end %>
 
 <% content_for :content_body_right do %>

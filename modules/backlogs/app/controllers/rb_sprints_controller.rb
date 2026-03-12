@@ -81,7 +81,7 @@ class RbSprintsController < RbApplicationController
 
     if call.success?
       flash[:notice] = I18n.t(:notice_successful_create)
-      render turbo_stream: turbo_stream.redirect_to(backlogs_project_backlogs_path(@project))
+      render turbo_stream: turbo_stream.redirect_to(sprint_planning_backlogs_project_backlogs_path(@project))
     else
       update_new_sprint_form_component_via_turbo_stream(sprint: call.result, base_errors: call.errors[:base])
       respond_with_turbo_streams
@@ -194,9 +194,5 @@ class RbSprintsController < RbApplicationController
     converted_sprint_params[:project] = @project
 
     converted_sprint_params
-  end
-
-  def not_authorized_on_feature_flag_inactive
-    render_403 unless OpenProject::FeatureDecisions.scrum_projects_active?
   end
 end
