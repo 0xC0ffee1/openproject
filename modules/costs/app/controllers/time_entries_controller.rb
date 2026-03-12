@@ -198,8 +198,6 @@ class TimeEntriesController < ApplicationController
   def load_and_authorize_optional_project
     if params[:project_id].present?
       @project = Project.visible.find(params[:project_id])
-      redirect_if_historical_project_identifier(:project_id)
-      return if performed?
 
       if !User.current.allowed_in_project?(:log_time, @project) &&
         !User.current.allowed_in_any_work_package?(:log_own_time, in_project: @project)
