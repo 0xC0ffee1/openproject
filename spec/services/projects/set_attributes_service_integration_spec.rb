@@ -75,5 +75,19 @@ RSpec.describe Projects::SetAttributesService, "integration", type: :model do
         expect(errors).to eq ["Identifier has already been taken."]
       end
     end
+
+    context "and a new project with an identifier formerly used by the existing project" do
+      let(:project) { Project.new name: "My new project", identifier: existing_identifier }
+
+      before { existing.update!(identifier: "my-renamed-project") }
+
+      it "results in an error — retired identifiers remain reserved" do
+        expect(service_result).to be_a_failure
+        expect(service_result.result.identifier).to eq existing_identifier
+
+        errors = service_result.errors.full_messages
+        expect(errors).to eq ["Identifier has already been taken."]
+      end
+    end
   end
 end

@@ -202,17 +202,21 @@ class Project < ApplicationRecord
 
   validates :identifier,
             presence: true,
-            uniqueness: { case_sensitive: true },
+            uniqueness: { case_sensitive: true }, # currently owned by another project
             length: { maximum: IDENTIFIER_MAX_LENGTH },
             exclusion: RESERVED_IDENTIFIERS,
             if: ->(p) { p.persisted? || p.identifier.present? }
+
+  # Complements the uniqueness validation above: once an identifier has been used by a
+  # project, it remains reserved for that project even after the project moves to a new
+  # identifier. This prevents another project from claiming a "retired" identifier.
+  # Powered by the friendly_id :history extension — see the friendly_id declaration below.
+  validate :identifier_not_historically_reserved, if: ->(p) { p.identifier_changed? }
 
   # Contains only a-z, 0-9, dashes and underscores but cannot consist of numbers only as it would clash with the id.
   validates :identifier,
             format: { with: /\A(?!^\d+\z)[a-z0-9\-_]+\z/ },
             if: ->(p) { p.identifier_changed? && p.identifier.present? }
-
-  validate :identifier_not_taken_by_former_identifiers, if: ->(p) { p.identifier_changed? }
 
   validates_associated :repository, :wiki
 
@@ -361,14 +365,17 @@ class Project < ApplicationRecord
 
   private
 
-  def identifier_not_taken_by_former_identifiers
+  # Checks friendly_id_slugs for any project that previously used this identifier and
+  # has since changed it. Excludes projects that still hold the identifier as their
+  # current one — those are already caught by the uniqueness validation above, and
+  # including them here would produce a duplicate error.
+  def identifier_not_historically_reserved
     already_existing = FriendlyId::Slug
                          .where(slug: identifier, sluggable_type: self.class.to_s)
                          .where.not(sluggable_id: id)
+                         .where.not(sluggable_id: Project.where(identifier:).select(:id))
                          .exists?
 
-    if already_existing
-      errors.add(:identifier, :taken)
-    end
+    errors.add(:identifier, :taken) if already_existing
   end
 end
