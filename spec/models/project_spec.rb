@@ -643,6 +643,18 @@ RSpec.describe Project do
       slug = FriendlyId::Slug.find_by(slug: "sc")
       expect(slug.sluggable_id).to eq(project.id)
     end
+
+    it "allows the project to revert to a previously used identifier" do
+      project.update!(identifier: "scp")
+      expect { project.update!(identifier: "sc") }.not_to raise_error
+      expect(project.identifier).to eq("sc")
+    end
+
+    it "is valid when reverting to own historical identifier" do
+      project.update!(identifier: "scp")
+      project.identifier = "sc"
+      expect(project).to be_valid
+    end
   end
 
   describe "#allowed_parent_workspace_types" do
