@@ -29,6 +29,7 @@
 #++
 
 require "spec_helper"
+require "support/shared/controllers/stale_project_identifier_redirect"
 
 RSpec.describe CategoriesController do
   let(:user) { create(:user) }
@@ -258,5 +259,11 @@ RSpec.describe CategoriesController do
 
       it_behaves_like "redirect"
     end
+  end
+
+  describe "stale identifier redirect" do
+    before { allow(User).to receive(:current).and_return user }
+
+    it_behaves_like "redirects GET requests using a historical project identifier", :new
   end
 end

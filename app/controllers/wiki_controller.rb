@@ -371,6 +371,9 @@ class WikiController < ApplicationController
 
   def find_wiki
     @project = Project.visible.find(params[:project_id])
+    redirect_if_historical_project_identifier(:project_id)
+    return if performed?
+
     @wiki = @project.wiki
     render_404 unless @wiki
   end

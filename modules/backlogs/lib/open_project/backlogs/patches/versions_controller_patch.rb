@@ -41,6 +41,7 @@ module OpenProject::Backlogs::Patches::VersionsControllerPatch
         # here we want to add that we always set it to the project from params if present
         if params[:project_id].present?
           @project = Project.visible.find(params[:project_id])
+          redirect_if_historical_project_identifier(:project_id)
         end
       end
 

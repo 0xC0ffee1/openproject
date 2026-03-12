@@ -42,6 +42,9 @@ class RbApplicationController < ApplicationController
   # User.current has permission to invoke the method in question.
   def load_sprint_and_project
     @project = Project.visible.find(params[:project_id])
+    redirect_if_historical_project_identifier(:project_id)
+    return if performed?
+
 
     # because of strong params, we want to pluck this variable out right now,
     # otherwise it causes issues where we are doing `attributes=`.

@@ -29,6 +29,7 @@
 #++
 
 require "spec_helper"
+require "support/shared/controllers/stale_project_identifier_redirect"
 
 RSpec.describe MessagesController, with_settings: { journal_aggregation_time_minutes: 0 } do
   let(:user) { create(:user) }
@@ -135,5 +136,13 @@ RSpec.describe MessagesController, with_settings: { journal_aggregation_time_min
         expect(response.parsed_body["content"]).to eq "Hello &lt;b&gt;world&lt;/b&gt; wrote:\n> foo\n\n"
       end
     end
+  end
+
+  describe "stale identifier redirect" do
+    let(:permissions) { %i[view_messages] }
+
+    it_behaves_like "redirects GET requests using a historical project identifier",
+                    :new,
+                    { forum_id: -> { forum.id } }
   end
 end

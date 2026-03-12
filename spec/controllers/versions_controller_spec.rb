@@ -29,6 +29,7 @@
 #++
 
 require "spec_helper"
+require "support/shared/controllers/stale_project_identifier_redirect"
 
 RSpec.describe VersionsController do
   let(:user) { create(:admin) }
@@ -359,5 +360,11 @@ RSpec.describe VersionsController do
       expect(response).to redirect_to(project_settings_versions_path(project))
       expect { Version.find(@deleted) }.to raise_error ActiveRecord::RecordNotFound
     end
+  end
+
+  describe "stale identifier redirect" do
+    before { login_as(user) }
+
+    it_behaves_like "redirects GET requests using a historical project identifier", :index
   end
 end

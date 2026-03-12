@@ -183,9 +183,10 @@ class ProjectsController < ApplicationController
   private
 
   def find_project_including_archived
-    # The actions that use this method are only accessible to admins, so we can show them archived projects as well and
-    # can skip the visible scope here.
+    # Skips the visible scope so archived projects are accessible.
+    # Project admins (regular users with admin role) may reach these actions via an old identifier.
     @project = Project.find(params[:id])
+    redirect_if_historical_project_identifier(:id)
   end
 
   def from_template? = @template.present?

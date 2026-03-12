@@ -159,6 +159,9 @@ class MessagesController < ApplicationController
 
   def find_project_and_forum
     @project = Project.visible.find(params[:project_id])
+    redirect_if_historical_project_identifier(:project_id)
+    return if performed?
+
     @forum = @project.forums.find(params[:forum_id])
   end
 

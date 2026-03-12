@@ -139,6 +139,7 @@ class VersionsController < ApplicationController
 
   def find_project
     @project = Project.visible.find(params[:project_id])
+    redirect_if_historical_project_identifier(:project_id)
   end
 
   def retrieve_selected_type_ids(selectable_types, default_types = nil)
