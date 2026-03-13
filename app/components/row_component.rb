@@ -68,6 +68,10 @@ class RowComponent < ApplicationComponent
     nil
   end
 
+  def data
+    {}
+  end
+
   def scheme
     :default
   end

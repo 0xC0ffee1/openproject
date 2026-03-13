@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#-- copyright
+# -- copyright
 # OpenProject is an open source project management software.
 # Copyright (C) the OpenProject GmbH
 #
@@ -26,16 +26,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See COPYRIGHT and LICENSE files for more details.
-#++
+# ++
 
-module Workflows
-  class RowComponent < ::OpPrimer::BorderBoxRowComponent
-    def name
-      link_to model.name, edit_workflow_path(model)
-    end
-
-    def data
-      { "filter--filter-list-target": "searchItem" }
+module OpenProject
+  module Common
+    # @logical_path OpenProject/Common
+    # @display min_height 250px
+    class QuickFilterPreview < Lookbook::Preview
+      def default
+        render_with_template
+      end
     end
   end
 end

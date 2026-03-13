@@ -292,7 +292,7 @@ en:
             confirm_button: "Start import"
             description: >
               This importer is an alpha feature. It is not yet able to import all data from Jira and might leave incomplete data on this OpenProject instance.
-              
+
               <b>Do not use a production environment and create a backup of your OpenProject data before starting.</b>
             confirm: "I understand and made the necessary preparations"
           revert_dialog:
@@ -402,6 +402,8 @@ en:
         default_transitions: "Default transitions"
         user_author: "User is author"
         user_assignee: "User is assignee"
+      type_filter:
+        label: "Filter by type name…"
 
   authentication:
     login_and_registration: "Login and registration"
