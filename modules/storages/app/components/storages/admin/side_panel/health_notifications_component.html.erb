@@ -31,8 +31,21 @@ See COPYRIGHT and LICENSE files for more details.
   component_wrapper(data: { turbo: true }) do
     render(Primer::OpenProject::SidePanel::Section.new) do |section|
       section.with_title { t("storages.health.project_folders.subtitle") }
+      section.with_action_icon(
+        tag: :a,
+        icon: :sync,
+        "aria-label": t(".sync_now"),
+        data: { turbo_method: :post },
+        href: ampf_sync_now_admin_settings_storage_path(@storage)
+      )
 
       flex_layout do |notifications_container|
+        if sync_pending?
+          notifications_container.with_row(mb: 2, mt: 2) do
+            render(Primer::Alpha::Banner.new) { t(".sync_queued") }
+          end
+        end
+
         notifications_container.with_row do
           concat(
             render(Primer::Beta::Text.new(pr: 2, test_selector: "storage-health-checked-at")) do

@@ -204,6 +204,11 @@ en:
         upload_link_service:
           not_found: The destination folder %{folder} could not be found on %{storage_name}.
   storages:
+    admin:
+      side_panel:
+        health_notifications_component:
+          sync_now: Sync now
+          sync_queued: Synchronization queued.
     buttons:
       done_continue: Done, continue
       open_storage: Open file storage

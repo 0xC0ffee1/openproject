@@ -58,15 +58,12 @@ search:
   ## Paths or `Find.find` patterns to search in:
   paths:
   #  - app/
-   - modules/storages/app/
+    - modules/storages/app/
 
   ## Root directories for relative keys resolution.
-  # relative_roots:
-  #   - app/controllers
-  #   - app/helpers
-  #   - app/mailers
-  #   - app/presenters
-  #   - app/views
+  relative_roots:
+    - modules/storages/app/components
+    - modules/storages/app/views
 
   ## Directories where method names which should not be part of a relative key resolution.
   # By default, if a relative translation is used inside a method, the name of the method will be considered part of the resolved key.
