@@ -62,11 +62,13 @@ Once the containers are done booting you can access the application under `http:
 You can run tests inside the `backend-test` container. You can run specific tests, too.
 
 ```shell
+docker compose up -d backend-test
+
 # Run all tests (not recommended)
-docker compose run --rm backend-test bundle exec rspec
+bin/compose exec backend-test bundle exec rspec
 
 # Run the specified test
-docker compose run --rm backend-test bundle exec rspec spec/features/work_package_show_spec.rb
+bin/compose exec backend-test bundle exec rspec spec/features/work_package_show_spec.rb
 ```
 
 ***
