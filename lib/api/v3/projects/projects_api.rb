@@ -58,6 +58,8 @@ module API
             requires :id, desc: "Project id"
           end
           route_param :id do
+            helpers ::API::Helpers::HistoricalIdentifierRedirect
+
             after_validation do
               # TODO: This should be scoped to only allow actual projects.
               # But since it and especially the NestedAPIs are established routes,
@@ -68,6 +70,8 @@ module API
                          else
                            Project.visible(current_user)
                          end.find(params[:id])
+
+              redirect_if_historical_identifier(:id, @project)
             end
 
             mount API::V3::Projects::Copy::CopyAPI

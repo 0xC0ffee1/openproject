@@ -35,6 +35,13 @@ module API
 
           resources :projects do
             route_param :id do
+              helpers ::API::Helpers::HistoricalIdentifierRedirect
+
+              after_validation do
+                @project = Project.find(params[:id])
+                redirect_if_historical_identifier(:id, @project)
+              end
+
               namespace "bcf_xml" do
                 helpers do
                   # Global helper to set allowed content_types
@@ -56,7 +63,7 @@ module API
                   end
 
                   def find_project
-                    Project.find(params[:id])
+                    @project || Project.find(params[:id])
                   end
                 end
 
