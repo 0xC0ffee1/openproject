@@ -176,6 +176,7 @@ en:
   label_sprint_edit: "Edit sprint"
   label_sprint_impediments: "Sprint Impediments"
   label_sprint_new: "New sprint"
+  label_sprint_planning: "Sprint planning"
   label_task_board: "Task board"
 
   permission_create_sprints: "Create sprints"

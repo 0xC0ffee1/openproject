@@ -113,16 +113,36 @@ module OpenProject::Backlogs
                    visible: -> { OpenProject::FeatureDecisions.scrum_projects_active? }
       end
 
+      # Menu items that are there when feature flag is active
       menu :project_menu,
            :backlogs,
-           { controller: "/rb_master_backlogs", action: :index },
+           { controller: "/rb_master_backlogs", action: :sprint_planning },
+           if: Proc.new { |project| project.module_enabled?(:backlogs) && OpenProject::FeatureDecisions.scrum_projects_active? },
            caption: :project_module_backlogs,
            after: :work_packages,
            icon: "op-backlogs"
 
       menu :project_menu,
+           :sprint_planning,
+           { controller: "/rb_master_backlogs", action: :sprint_planning },
+           if: Proc.new { |project| project.module_enabled?(:backlogs) && OpenProject::FeatureDecisions.scrum_projects_active? },
+           caption: :label_sprint_planning,
+           parent: :backlogs
+
+      # Menu items that are there when feature flag is inactive
+      menu :project_menu,
+           :backlogs_legacy,
+           { controller: "/rb_master_backlogs", action: :index },
+           if: Proc.new { |project| project.module_enabled?(:backlogs) && !OpenProject::FeatureDecisions.scrum_projects_active? },
+           caption: :project_module_backlogs,
+           after: :work_packages,
+           icon: "op-backlogs"
+
+      # Menu items that are always present
+      menu :project_menu,
            :settings_backlogs,
            { controller: "/projects/settings/backlogs", action: :show },
+           if: Proc.new { |project| project.module_enabled?(:backlogs) },
            caption: :label_backlogs,
            parent: :settings,
            before: :settings_storage

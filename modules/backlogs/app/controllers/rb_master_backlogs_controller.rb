@@ -31,7 +31,13 @@
 class RbMasterBacklogsController < RbApplicationController
   include WorkPackages::WithSplitView
 
-  menu_item :backlogs
+  if OpenProject::FeatureDecisions.scrum_projects_active?
+    current_menu_item [:sprint_planning] do
+      :sprint_planning
+    end
+  else
+    menu_item :backlogs
+  end
 
   before_action :not_authorized_on_feature_flag_inactive, only: :sprint_planning
   before_action :load_backlogs, only: %i[index sprint_planning]
