@@ -264,7 +264,18 @@ class ApplicationController < ActionController::Base
   def redirect_if_historical_project_identifier(identifier_param_key)
     param = params[identifier_param_key]
     if request.get? && request.format.html? && param.friendly_id? && param != @project.identifier
-      redirect_to url_for(params.to_unsafe_h.merge(identifier_param_key => @project.identifier)),
+      # Reconstruct the URL from path + query parameters, and prevent user-supplied
+      # options such as :host or :protocol from influencing the redirect target.
+      safe_path_params  = request.path_parameters.symbolize_keys
+      safe_query_params = request.query_parameters.symbolize_keys
+
+      # Ensure the identifier in the path matches the current project identifier.
+      safe_path_params[identifier_param_key] = @project.identifier
+
+      # Remove any URL option keys that could affect the redirect target.
+      safe_query_params.except!(:host, :protocol, :subdomain, :domain, :port)
+
+      redirect_to url_for(safe_path_params.merge(safe_query_params).merge(only_path: true)),
                   status: :moved_permanently
     end
   end
