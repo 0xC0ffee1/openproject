@@ -33,9 +33,17 @@ module API
     module Projects
       class AvailableParentsAPI < ::API::OpenProjectAPI
         resource :available_parent_projects do
+          helpers ::API::Helpers::HistoricalIdentifierRedirect
+
           after_validation do
             authorize_globally(:add_project) do
               authorize_in_any_project(%i[add_subprojects edit_project])
+            end
+
+            # Handle redirect for historical identifier in :of query param
+            if params[:of]
+              @of_project = Project.find(params[:of])
+              redirect_if_historical_identifier(:of, @of_project)
             end
           end
 
@@ -43,7 +51,8 @@ module API
             model: Project,
             scope: -> do
               project = if params[:of]
-                          Project.find(params[:of])
+                          # Reuse @of_project if available (already found in after_validation)
+                          @of_project || Project.find(params[:of])
                         else
                           Project.new(workspace_type: params[:workspace_type] || "project")
                         end

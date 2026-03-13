@@ -96,6 +96,8 @@ module API
               requires :type, desc: "Work package schema id"
             end
             namespace ":project-:type" do
+              helpers ::API::Helpers::HistoricalIdentifierRedirect
+
               after_validation do
                 begin
                   @project = Project.find(params[:project])
@@ -103,6 +105,8 @@ module API
                 rescue ActiveRecord::RecordNotFound
                   raise404
                 end
+
+                redirect_if_historical_identifier(:project, @project)
 
                 authorize_in_any_work_package(:view_work_packages, in_project: @project) do
                   raise404

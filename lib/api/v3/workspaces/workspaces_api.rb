@@ -43,12 +43,16 @@ module API
           mount ::API::V3::Workspaces::Schemas::WorkspaceSchemaAPI
 
           route_param :id do
+            helpers ::API::Helpers::HistoricalIdentifierRedirect
+
             after_validation do
               @project = if current_user.admin?
                            Project
                          else
                            Project.visible(current_user)
                          end.find(params[:id])
+
+              redirect_if_historical_identifier(:id, @project)
             end
 
             mount ::API::V3::Workspaces::InstanceApis
