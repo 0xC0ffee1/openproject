@@ -38,7 +38,7 @@ RSpec.describe Users::InviteController do
     login_as(user)
   end
 
-  describe "stale identifier handling" do
+  describe "historic identifier handling" do
     let!(:old_identifier) { project.identifier }
 
     before { project.update!(identifier: "current-identifier") }

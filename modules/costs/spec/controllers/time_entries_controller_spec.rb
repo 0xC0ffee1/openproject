@@ -291,7 +291,7 @@ RSpec.describe TimeEntriesController do
     end
   end
 
-  describe "stale identifier handling" do
+  describe "historic identifier handling" do
     let(:project) { create(:project) }
     let(:user) { create(:user, member_with_permissions: { project => [:log_time] }) }
     let!(:old_identifier) { project.identifier }

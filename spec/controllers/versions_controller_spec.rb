@@ -361,7 +361,7 @@ RSpec.describe VersionsController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     before { login_as(user) }
 
     it_behaves_like "redirects GET requests using a historical project identifier", :index

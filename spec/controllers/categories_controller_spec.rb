@@ -260,7 +260,7 @@ RSpec.describe CategoriesController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     before { allow(User).to receive(:current).and_return user }
 
     it_behaves_like "redirects GET requests using a historical project identifier", :new

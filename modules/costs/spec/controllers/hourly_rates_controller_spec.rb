@@ -249,7 +249,7 @@ RSpec.describe HourlyRatesController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     let(:project) { create(:project) }
     let(:rate_user) { create(:user) }
 

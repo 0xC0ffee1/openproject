@@ -137,7 +137,7 @@ RSpec.describe MessagesController, with_settings: { journal_aggregation_time_min
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     let(:permissions) { %i[view_messages] }
 
     it_behaves_like "redirects GET requests using a historical project identifier",

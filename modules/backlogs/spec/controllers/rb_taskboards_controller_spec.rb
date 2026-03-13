@@ -86,7 +86,7 @@ RSpec.describe RbTaskboardsController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     let(:project) { create(:project) }
     let(:sprint) { create(:sprint, project:) }
 

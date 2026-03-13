@@ -624,7 +624,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     let(:project) { create(:project) }
 
     it_behaves_like "redirects GET requests using a historical project :id", :destroy_info

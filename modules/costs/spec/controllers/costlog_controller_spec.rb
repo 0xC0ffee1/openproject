@@ -754,7 +754,7 @@ RSpec.describe CostlogController do
     end
   end
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     let(:project) { create(:project_with_types) }
     let(:user) { create(:user, member_with_permissions: { project => [:log_costs] }) }
 

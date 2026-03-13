@@ -33,7 +33,7 @@ require "spec_helper"
 RSpec.describe WikiController do
   shared_let(:admin) { create(:admin) }
 
-  describe "stale identifier redirect" do
+  describe "historic identifier redirect" do
     # Use a local let (not shared_let) so we can mutate the identifier without
     # affecting the shared project used by the rest of the suite.
     let(:project) { create(:project).tap { |p| create(:wiki, project: p) } }
